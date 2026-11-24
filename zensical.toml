@@ -6,6 +6,7 @@ repo_url = "https://github.com/archinautio/battletech"
 docs_dir = "docs/site"
 site_dir = "build/site"
 strict = true
+copyright = "Free software under the GNU GPL v3 or later. Unofficial fan project, not affiliated with or endorsed by The Topps Company, Inc., Catalyst Game Labs or Microsoft. BattleTech, BattleMech, 'Mech and MechWarrior are trademarks of The Topps Company, Inc."
 nav = [
   { "Getting started" = "index.md" },
   { "Setting up a match" = "setup.md" },

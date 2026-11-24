@@ -72,7 +72,7 @@ All release files land in `tui/build/release/`:
     --print-module-deps` on the shadow jar and `jlink`s exactly those modules into
     `build/jlink/runtime`. A module reached only through reflection or a service loader is
     invisible to `jdeps`; add it to the task's `extraModules`.
-  - `stageBundle` lays out `build/bundle/<name>/`: `battletech.jar`, `runtime/`, and the launcher
+  - `stageBundle` lays out `build/bundle/<name>/`: `battletech.jar`, `runtime/`, `LICENSE`, and the launcher
     from `tui/bundle/` (`battletech` for POSIX shells, `battletech.bat` on Windows). The launcher
     runs `runtime/bin/java -jar battletech.jar`; native access comes from the jar's manifest.
   - `bundleSmokeTest` (`buildSrc`'s `LauncherSmokeTest`) runs the staged launcher with

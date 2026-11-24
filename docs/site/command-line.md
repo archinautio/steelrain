@@ -45,7 +45,7 @@ These work with every command, and with no command.
 | `--list-mechs` | List the available mechs with tonnage and movement points, then exit. |
 | `--list-units` | List the available unit collections and their units, then exit. |
 | `--list-themes` | List the available color themes, then exit. |
-| `--version` | Show the version, then exit. |
+| `--version` | Show the version, the license and the trademark notice, then exit. |
 
 A registered file is named after its filename without `.json`: `--add-map ./maps/arena.json`
 registers the map `arena`. Listings include built-in and registered content, marking registered

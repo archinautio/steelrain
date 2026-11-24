@@ -57,6 +57,12 @@ tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     mergeServiceFiles()
     filesNotMatching("META-INF/services/**") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
+    // GPL-3.0: ship the license text with the binary. A distinct name so a dependency's own
+    // META-INF/LICENSE cannot win the duplicate exclusion above.
+    from(rootProject.layout.projectDirectory.file("LICENSE")) {
+        into("META-INF")
+        rename { "LICENSE-battletech" }
+    }
     manifest {
         attributes(
             // `java -jar` reads this instead of a command-line flag.
@@ -109,6 +115,7 @@ val stageBundle = tasks.register<Sync>("stageBundle") {
     into(layout.buildDirectory.dir("bundle/$bundleName"))
     from(jlinkRuntime) { into("runtime") }
     from(tasks.shadowJar) { rename { "battletech.jar" } }
+    from(rootProject.layout.projectDirectory.file("LICENSE"))
     from("bundle") {
         include(if (isWindows) "battletech.bat" else "battletech")
         filePermissions { unix("rwxr-xr-x") }

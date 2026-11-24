@@ -465,6 +465,19 @@ internal class CliArgsTest {
         }
 
         @Test
+        fun `--version prints the trademark and non-affiliation notice`() {
+            val output = failing("--version").output
+            assertTrue(output.contains("trademarks of The Topps Company, Inc."))
+            assertTrue(output.contains("unofficial"))
+            assertTrue(output.contains("not affiliated"))
+        }
+
+        @Test
+        fun `--version prints the GPL license notice`() {
+            assertTrue(failing("--version").output.contains("GNU GPL version 3 or later"))
+        }
+
+        @Test
         fun `combining list flags prints every section, maps before mechs before units`() {
             val output = failing("--list-units", "--list-mechs", "--list-maps", "hot-seat").output
             assertTrue(output.contains("Maps:"))

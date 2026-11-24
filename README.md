@@ -30,3 +30,19 @@ java -jar tui/build/libs/tui.jar hot-seat
 
 With no command the game opens the interactive setup screen. See the
 [command line reference](docs/site/command-line.md) for `hot-seat`, `host`, `join`, and `server`.
+
+## License
+
+Copyright (C) 2026 the project's contributors.
+
+This program is free software: you can redistribute it and/or modify it under the terms of the
+GNU General Public License as published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
+[LICENSE](LICENSE) for the full text.
+
+## Legal
+
+BattleTech, BattleMech, 'Mech and MechWarrior are registered trademarks and/or trademarks of
+The Topps Company, Inc. This is an unofficial, free, non-commercial fan project. It is not
+affiliated with, endorsed, sponsored or approved by The Topps Company, Inc., Catalyst Game Labs,
+InMediaRes Productions, LLC or Microsoft Corporation.

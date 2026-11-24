@@ -291,7 +291,9 @@ private class BattletechTui(
             terminal = cliTerminal
             exitProcess = cliExit
         }
-        versionOption(BATTLETECH_VERSION, help = "Show the version and exit") { "battletech $it" }
+        versionOption(BATTLETECH_VERSION, help = "Show the version, license and trademark notice, then exit") {
+            "battletech $it\n\n$LICENSE_NOTICE\n\n$TRADEMARK_NOTICE"
+        }
     }
 
     /**
