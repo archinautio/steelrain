@@ -34,13 +34,38 @@ instead of `./gradlew`.
 
 ## Play your first match
 
-Start the game with no arguments:
+Run this from the `battletech` directory:
+
+```sh
+java -jar tui/build/libs/tui.jar hot-seat
+```
+
+The match starts right away, with both players sharing your keyboard. It uses the built-in
+`default` scenario on the `battletech-classic` map: Player 1 has an Atlas and a Hunchback, and
+Player 2 has two Wolverines.
+
+The banner at the top always says whose turn it is and what to do next. A turn goes like this:
+
+1. **Movement**: press `Tab` to select one of your mechs, move the cursor with `q` `w` `e` `a`
+   `s` `d` to one of the highlighted hexes, press `Enter`, then choose the direction to face with
+   the same keys.
+2. **Weapon attack**: press `Tab` to select one of your mechs, `Space` to fire the weapon under
+   the cursor (`↑`/`↓` to move between weapons), and `c` to commit.
+3. **Physical attack**: mechs next to an enemy can punch or kick, in the same way.
+
+Then heat is applied and the next turn begins, until only one side has mechs left. Press `?` at
+any time to show the keys for the current screen, and `Ctrl+C` to quit. See
+[Playing a match](playing.md) for the details.
+
+## Set up your own match
+
+To choose the map and the mechs yourself, start the game with no arguments:
 
 ```sh
 java -jar tui/build/libs/tui.jar
 ```
 
-This opens the setup screen. To start a hot-seat match on the default map:
+This opens the setup screen. To start a hot-seat match:
 
 1. Press `c` to lock in **hot-seat** mode.
 2. Press `Space` to select the map under the cursor.
@@ -50,12 +75,5 @@ This opens the setup screen. To start a hot-seat match on the default map:
 5. Press `c` to start the match.
 
 Mechs are placed automatically near each player's edge of the map. See
-[Setting up a match](setup.md) for the details and [Playing a match](playing.md) for how a turn
-works.
-
-Press `?` at any time to show the keys available on the current screen, and
-`Ctrl+C` to quit.
-
-!!! tip "Starting a match directly"
-    `java -jar tui/build/libs/tui.jar hot-seat` skips the setup screen and starts the built-in
-    `default` scenario on the default map. See [Command line](command-line.md).
+[Setting up a match](setup.md) for the details, and [Command line](command-line.md) to start
+other maps and scenarios directly.

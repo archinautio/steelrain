@@ -18,7 +18,7 @@ Requires JDK 25 and a terminal using a [Nerd Font](https://www.nerdfonts.com/).
 
 ```sh
 ./gradlew :tui:shadowJar
-java -jar tui/build/libs/tui.jar
+java -jar tui/build/libs/tui.jar hot-seat
 ```
 
 With no command the game opens the interactive setup screen. See the
