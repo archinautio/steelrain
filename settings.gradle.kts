@@ -4,6 +4,5 @@ include(
     "strategic",
     "tactical",
     "network",
-    "bt",
     "tui"
 )

@@ -49,12 +49,12 @@ Not needed for everyday context — read the row's doc when its trigger applies.
 
 ### Module Structure
 
-Dependencies flow: `tui` → `tactical` + `network`; `network` → (`api`) `tactical`; `bt` → `strategic` + `tactical`.
+Dependencies flow: `tui` → `tactical` + `network`; `network` → (`api`) `tactical`; `strategic` has no dependents yet.
 
 - **`tactical/`** — the engine: tactical rules (combat, to-hit, movement, heat) plus game/map/mech loading. Delivery-agnostic: no UI assumptions, no console I/O.
 - **`network/`** — client/server layer over `tactical` (`GameServer`, `LobbyHost`, `SocketAcceptor`, `ClientGameSession`, `LobbyClient`, `transport/`, wire protocol). No UI; reuses `tactical`'s types as wire DTOs rather than redefining them.
 - **`tui/`** — the Steelrain terminal UI, built on the external Tenter library. Entry point `io.archinaut.steelrain.tui.MainKt`; bare invocation opens the interactive setup screen (`setup/`).
-- **`strategic/` + `bt/`** — placeholders. Ignore unless explicitly asked.
+- **`strategic/`** — placeholder. Ignore unless explicitly asked.
 
 ### Invariants
 

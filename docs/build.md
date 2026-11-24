@@ -11,13 +11,12 @@ packaging, in `io.archinaut.steelrain.gradle` (see [Release packaging](#release-
 
 - **`steelrain.kotlin-common`** — base for every module: applies `kotlin("jvm")`, sets the JVM toolchain (JVM 21 when `CLAUDE_CODE` env var is set — Claude Cloud constraint — otherwise the catalog version), enables `explicitApi()`, configures JUnit Platform + test logging, wires standard test deps (JUnit BOM/bundle, MockK, AssertJ).
 - **`steelrain.kotlin-library`** — applies `kotlin-common`; used by `strategic`, `tactical`, and `network`.
-- **`steelrain.kotlin-application`** — applies `kotlin-common` + the `application` plugin; used by `bt` and `tui`.
+- **`steelrain.kotlin-application`** — applies `kotlin-common` + the `application` plugin; used by `tui`.
 - **`steelrain.kotlin-serialization`** — applies the Kotlin serialization plugin; used by `tactical` and `network` (both need kotlinx-serialization for `GameState`/wire types).
 
 ## Module dependency edges
 
 - `network → tactical`: `api(project(":tactical"))` in `network/build.gradle.kts` — deliberately transitive (not `implementation`). `network` re-exports `tactical` types (`GameCommand`, `GameEvent`, `PlayerGameState`, `LogEntry`, `TurnState`) directly as wire DTOs instead of redefining them, so consumers of `network` need `tactical`'s types on their compile classpath too.
-- `bt → strategic`, `bt → tactical`: both `implementation(project(...))` in `bt/build.gradle.kts`.
 - `tui → tactical`, `tui → network`: `implementation(project(...))` in `tui/build.gradle.kts`.
 - `strategic` and `tactical` declare no `project(...)` dependencies on other modules.
 
