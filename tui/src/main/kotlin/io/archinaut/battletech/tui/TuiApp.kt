@@ -31,10 +31,14 @@ import io.archinaut.tenter.terminal.TerminalEvent
  * to both the setup screen ([io.archinaut.battletech.tui.setup.SetupApp]) and this class. The scope owns
  * alternate-screen/cursor cleanup; this app's cold input flow acquires and releases raw mode while
  * it is collected, with no flicker at the hand-off between the two screens.
+ *
+ * [animationsEnabled] turns the weapon-fire overlay played after attacks resolve on or off;
+ * by default it is on only when the [ANIMATIONS_ENV_VAR] environment variable is defined.
  */
 public class TuiApp(
     private val seats: Map<PlayerId, GameSession>,
     private val screen: Screen,
+    private val animationsEnabled: Boolean = System.getenv(ANIMATIONS_ENV_VAR) != null,
 ) {
 
     /**
@@ -81,6 +85,7 @@ public class TuiApp(
                     screen = screen,
                     initialState = appState,
                     keys = keys,
+                    animationsEnabled = animationsEnabled,
                 )
             } finally {
                 subscriptions.forEach { it.unsubscribe() }
@@ -88,6 +93,9 @@ public class TuiApp(
         }
     }
 }
+
+/** Defining this environment variable (to any value) turns on the weapon-fire animations. */
+internal const val ANIMATIONS_ENV_VAR: String = "BATTLETECH_ANIMATIONS"
 
 /** tenter's generic [TerminalEvent] mapped onto this app's own [UiEvent] hierarchy — see [UiEvent]'s KDoc for why it has a [UiEvent.Session] arm tenter cannot know about. */
 private fun TerminalEvent.toUiEvent(): UiEvent = when (this) {

@@ -128,6 +128,10 @@ Attacks are resolved together once every unit has had its turn to declare, so a 
 this phase still fires. Results appear in **ATTACK RESULTS** and
 the LOG: the dice rolled, hit or miss, and where the damage landed.
 
+Weapon-fire animations after the attacks resolve are off by default. To turn them on, define the
+`BATTLETECH_ANIMATIONS` environment variable (any value) before starting the game, for example
+`BATTLETECH_ANIMATIONS=1 java -jar tui.jar`. While they play, `Esc` skips them.
+
 ![The ATTACK RESULTS panel beside the map: each weapon's roll, HIT, and the damage per location](assets/screenshots/attack-results.png) See [To-hit modifiers](rules/to-hit-modifiers.md), [Line of sight](rules/line-of-sight.md)
 and [Armor and damage](rules/armor-damage.md).
 

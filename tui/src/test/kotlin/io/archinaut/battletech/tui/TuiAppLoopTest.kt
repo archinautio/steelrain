@@ -944,6 +944,40 @@ internal class TuiAppLoopTest {
     }
 
     @Test
+    fun `AttacksResolved starts no animation when animations are disabled`() = runTest(UnconfinedTestDispatcher()) {
+        terminal.withScreen { screen ->
+            val internalEvents = Channel<UiEvent>(Channel.UNLIMITED)
+            var builds = 0
+            val loopJob = launch {
+                runLoop(
+                    events = internalEvents.receiveAsFlow(),
+                    internalEvents = internalEvents,
+                    screen = screen,
+                    initialState = buildAppState(),
+                    keys = Keybindings.DEFAULT,
+                    buildVolley = { results, width, height ->
+                        builds++
+                        testVolley(TestAnimation())(results, width, height)
+                    },
+                    animationsEnabled = false,
+                    nowNanos = { testScheduler.currentTime * 1_000_000L },
+                )
+            }
+
+            internalEvents.send(UiEvent.Session(AttacksResolved(emptyList())))
+
+            assertEquals(0, builds, "no volley should be built while animations are disabled")
+            assertFalse(
+                screenText().contains(animationTopBorder),
+                "No animation panel should appear while animations are disabled",
+            )
+
+            internalEvents.send(UiEvent.Quit)
+            loopJob.join()
+        }
+    }
+
+    @Test
     fun `a session event resamples the active animation at the current elapsed time`() =
         runTest(UnconfinedTestDispatcher()) {
             terminal.withScreen { screen ->

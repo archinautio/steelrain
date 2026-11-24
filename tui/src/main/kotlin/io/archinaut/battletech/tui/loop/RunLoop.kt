@@ -54,6 +54,7 @@ import kotlin.time.Duration.Companion.seconds
  * [buildVolley] turns a resolved volley's results into the overlay that plays for it — one panel
  * per distinct weapon category fired, already placed on a screen of the given size. Defaults to
  * [WeaponAnimations.volleyFor]; a test overrides it to pin both which animations play and where.
+ * When [animationsEnabled] is false a resolved volley starts no overlay at all.
  *
  * A throwable raised while handling one event goes to [errorLog], never stderr — which would draw
  * over the frame — and the user sees a flash saying where its details went.
@@ -66,6 +67,7 @@ internal suspend fun runLoop(
     keys: Keybindings,
     buildVolley: (List<AttackResult>, Int, Int) -> AnimationPlayback<PanelPlacement>? =
         { results, width, height -> WeaponAnimations.volleyFor(results, width, height) },
+    animationsEnabled: Boolean = true,
     nowNanos: () -> Long = System::nanoTime,
     errorLog: ErrorLog = ErrorLog.DEFAULT,
 ): Unit = coroutineScope {
@@ -331,7 +333,7 @@ internal suspend fun runLoop(
                     // TuiApp.run's KDoc) starts exactly one volley, not two. Volley construction
                     // owns the per-animation fit check, after it knows the concrete animations.
                     val resolved = ui.event
-                    if (resolved is AttacksResolved && activeAnimation == null) {
+                    if (animationsEnabled && resolved is AttacksResolved && activeAnimation == null) {
                         startVolley(resolved.results)
                     }
                     render()
