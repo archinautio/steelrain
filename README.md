@@ -16,7 +16,12 @@ Supports hot-seat and network play.
 
 ## Quick start
 
-Requires JDK 25 and a terminal using a [Nerd Font](https://www.nerdfonts.com/).
+Download the game from the [releases](https://github.com/archinautio/battletech/releases), either
+with its own Java or as a jar for Java 25; see
+[Getting started](docs/site/index.md#download). The game needs a terminal using a
+[Nerd Font](https://www.nerdfonts.com/).
+
+To build and run from source instead, with JDK 25:
 
 ```sh
 ./gradlew :tui:shadowJar

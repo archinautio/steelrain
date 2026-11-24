@@ -7,13 +7,11 @@ network.
 ![The game screen during movement: the hex map with woods, water and four mechs, the hexes the selected Wolverine can reach, its pilot, heat and armor in UNIT STATUS, and the log](assets/screenshots/game-overview.png)
 
 !!! note "Early development"
-    There are no released builds yet; you build the game from source. These pages follow the
-    `main` branch.
+    These pages follow the `main` branch, so they can describe features newer than the latest
+    release.
 
 ## Requirements
 
-- **JDK 25**, to build and run the game.
-- **Git**, to get the source.
 - **A terminal using a [Nerd Font](https://www.nerdfonts.com/).** Units, terrain, dice and log
   markers are drawn with Nerd Font icons; other fonts show placeholder boxes instead.
 - **A large enough window.** Around 200 × 50 characters shows the map and its side panels
@@ -21,7 +19,43 @@ network.
 - Truecolor support is recommended. 256-color and 16-color terminals work too; see
   [Color themes](themes.md).
 
-## Build
+## Download
+
+Each [release](https://github.com/archinautio/battletech/releases) has two kinds of download.
+Pick one:
+
+- **With its own Java**, nothing else to install. Pick the file for your system:
+
+    | System | File |
+    |---|---|
+    | macOS (Apple Silicon) | `battletech-<version>-macos-aarch64.tar.gz` |
+    | Linux (x86-64) | `battletech-<version>-linux-x64.tar.gz` |
+    | Linux (ARM64) | `battletech-<version>-linux-aarch64.tar.gz` |
+    | Windows (x86-64) | `battletech-<version>-windows-x64.zip` |
+
+    Unpack it anywhere. The game is the `battletech` script inside (`battletech.bat` on
+    Windows); keep it next to `battletech.jar` and the `runtime` folder. To run it from any
+    directory, add that folder to your `PATH`, or on macOS and Linux link the script into a
+    directory already on it.
+
+- **The jar**, `battletech-<version>.jar`, if you already have **Java 25** or later. Run it with
+  `java -jar battletech-<version>.jar`.
+
+!!! warning "macOS blocks the first run"
+    The downloads are not signed by Apple, so macOS may refuse to open them, saying it cannot
+    verify the developer. Remove the download mark from the unpacked folder once:
+
+    ```sh
+    xattr -dr com.apple.quarantine battletech-<version>-macos-aarch64
+    ```
+
+These pages write the game's command as `battletech`. With the jar, type
+`java -jar battletech-<version>.jar` in its place; when you build from source, type
+`java -jar tui/build/libs/tui.jar`. Run `battletech --version` to see which version you have.
+
+### Build from source
+
+You need **JDK 25** and **Git**:
 
 ```sh
 git clone https://github.com/archinautio/battletech.git
@@ -34,10 +68,8 @@ instead of `./gradlew`.
 
 ## Play your first match
 
-Run this from the `battletech` directory:
-
 ```sh
-java -jar tui/build/libs/tui.jar hot-seat
+battletech hot-seat
 ```
 
 The match starts right away, with both players sharing your keyboard. It uses the built-in
@@ -62,7 +94,7 @@ any time to show the keys for the current screen, and `Ctrl+C` to quit. See
 To choose the map and the mechs yourself, start the game with no arguments:
 
 ```sh
-java -jar tui/build/libs/tui.jar
+battletech
 ```
 
 This opens the setup screen. To start a hot-seat match:

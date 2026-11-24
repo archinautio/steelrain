@@ -13,7 +13,7 @@ Without `--theme`, the game picks the dark theme that matches your terminal's co
 cannot detect a light terminal background, so choose a light theme yourself:
 
 ```sh
-java -jar tui/build/libs/tui.jar --theme light
+battletech --theme light
 ```
 
 `--theme` must come before the command name, for example `--theme light-256 hot-seat`.
@@ -29,7 +29,7 @@ themes use your terminal's own palette, so their exact look depends on your term
 `--theme` also accepts the path of a theme file:
 
 ```sh
-java -jar tui/build/libs/tui.jar --theme ./my-theme.json
+battletech --theme ./my-theme.json
 ```
 
 If the path exists, the game uses that file and reports any error in it; otherwise the value is

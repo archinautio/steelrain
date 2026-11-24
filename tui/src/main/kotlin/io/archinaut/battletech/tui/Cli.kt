@@ -28,11 +28,20 @@ import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.options.validate
+import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.parameters.types.int
 import com.github.ajalt.mordant.rendering.AnsiLevel
 import com.github.ajalt.mordant.terminal.Terminal
 import kotlin.io.path.Path
 import kotlin.io.path.exists
+
+/**
+ * The release version, read from the jar manifest's `Implementation-Version` (set from
+ * `gradle.properties` by `tui/build.gradle.kts`); `"development"` when running from classes, as in
+ * tests or an IDE.
+ */
+internal val BATTLETECH_VERSION: String =
+    BattletechTui::class.java.`package`?.implementationVersion ?: "development"
 
 /** Default TCP port for `host`/`join`/`server` when `--port`/an explicit port is not supplied. */
 internal const val DEFAULT_PORT: Int = 2470
@@ -282,6 +291,7 @@ private class BattletechTui(
             terminal = cliTerminal
             exitProcess = cliExit
         }
+        versionOption(BATTLETECH_VERSION, help = "Show the version and exit") { "battletech $it" }
     }
 
     /**

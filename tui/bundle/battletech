@@ -1,0 +1,13 @@
+#!/bin/sh
+# Runs BattleTech with the Java runtime bundled next to this script.
+# Resolve symlinks first, so the script also works when linked into a directory on PATH.
+self="$0"
+while [ -L "$self" ]; do
+    target="$(readlink "$self")"
+    case "$target" in
+        /*) self="$target" ;;
+        *) self="$(dirname "$self")/$target" ;;
+    esac
+done
+dir="$(cd "$(dirname "$self")" && pwd)"
+exec "$dir/runtime/bin/java" -jar "$dir/battletech.jar" "$@"

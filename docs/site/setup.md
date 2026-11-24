@@ -3,7 +3,7 @@
 Running the game with no command opens the setup screen:
 
 ```sh
-java -jar tui/build/libs/tui.jar
+battletech
 ```
 
 The setup screen defines a match in two stages: first the mode, then the map and each player's

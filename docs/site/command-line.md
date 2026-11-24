@@ -1,8 +1,11 @@
 # Command line
 
 ```text
-java -jar tui/build/libs/tui.jar [<options>] [<command> [<command options>]]
+battletech [<options>] [<command> [<command options>]]
 ```
+
+`battletech` stands for the way you start the game; see [Download](index.md#download) for the
+jar and from-source equivalents.
 
 With no command, the game opens the [setup screen](setup.md). A command starts a match directly:
 
@@ -16,8 +19,8 @@ With no command, the game opens the [setup screen](setup.md). A command starts a
 Run `--help` on its own, or after a command, for the full option list:
 
 ```sh
-java -jar tui/build/libs/tui.jar --help
-java -jar tui/build/libs/tui.jar host --help
+battletech --help
+battletech host --help
 ```
 
 !!! warning "Options go before the command"
@@ -25,7 +28,7 @@ java -jar tui/build/libs/tui.jar host --help
     come after it:
 
     ```sh
-    java -jar tui/build/libs/tui.jar --add-map arena.json hot-seat --map arena
+    battletech --add-map arena.json hot-seat --map arena
     ```
 
 ## General options
@@ -42,13 +45,14 @@ These work with every command, and with no command.
 | `--list-mechs` | List the available mechs with tonnage and movement points, then exit. |
 | `--list-units` | List the available unit collections and their units, then exit. |
 | `--list-themes` | List the available color themes, then exit. |
+| `--version` | Show the version, then exit. |
 
 A registered file is named after its filename without `.json`: `--add-map ./maps/arena.json`
 registers the map `arena`. Listings include built-in and registered content, marking registered
 entries `(external)`. Several `--list-*` options can be combined:
 
 ```sh
-java -jar tui/build/libs/tui.jar --add-map ./maps/arena.json --list-maps --list-units
+battletech --add-map ./maps/arena.json --list-maps --list-units
 ```
 
 See [Custom maps, units and mechs](custom-content.md) for the file formats.
@@ -66,7 +70,7 @@ and `--add-unit`. A unit collection has no map of its own, so the same collectio
 any map large enough for its starting positions.
 
 ```sh
-java -jar tui/build/libs/tui.jar --add-unit ./units/duel.json hot-seat --map river-valley --unit duel
+battletech --add-unit ./units/duel.json hot-seat --map river-valley --unit duel
 ```
 
 ## `join`

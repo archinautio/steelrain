@@ -1,3 +1,5 @@
+import io.archinaut.battletech.gradle.JlinkRuntime
+import io.archinaut.battletech.gradle.LauncherSmokeTest
 import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
@@ -55,8 +57,90 @@ tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     mergeServiceFiles()
     filesNotMatching("META-INF/services/**") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-    // `java -jar` reads this instead of a command-line flag.
-    manifest { attributes("Enable-Native-Access" to nativeAccess) }
+    manifest {
+        attributes(
+            // `java -jar` reads this instead of a command-line flag.
+            "Enable-Native-Access" to nativeAccess,
+            // `--version` reads this.
+            "Implementation-Version" to project.version,
+        )
+    }
+}
+
+// Release downloads; see docs/build.md "Release packaging". Everything lands in build/release.
+val releaseDirectory = layout.buildDirectory.dir("release")
+val releaseVersion = project.version.toString()
+
+val releaseJar = tasks.register<Copy>("releaseJar") {
+    group = "distribution"
+    description = "Copies the shadow jar to build/release as battletech-<version>.jar."
+    from(tasks.shadowJar)
+    rename(".*", "battletech-$releaseVersion.jar")
+    into(releaseDirectory)
+}
+
+// The bundle with its own Java is built for the OS and CPU Gradle runs on.
+val isWindows = System.getProperty("os.name").startsWith("Windows")
+val platform = run {
+    val osName = System.getProperty("os.name")
+    val os = when {
+        osName.startsWith("Mac") -> "macos"
+        isWindows -> "windows"
+        else -> "linux"
+    }
+    val arch = when (val arch = System.getProperty("os.arch")) {
+        "aarch64", "arm64" -> "aarch64"
+        "amd64", "x86_64" -> "x64"
+        else -> arch
+    }
+    "$os-$arch"
+}
+val bundleName = "battletech-$releaseVersion-$platform"
+
+val jlinkRuntime = tasks.register<JlinkRuntime>("jlinkRuntime") {
+    description = "Builds a trimmed Java runtime with the modules the shadow jar uses."
+    jar.set(tasks.shadowJar.flatMap { it.archiveFile })
+    launcher.set(javaToolchains.launcherFor(java.toolchain))
+    outputDirectory.set(layout.buildDirectory.dir("jlink/runtime"))
+}
+
+val stageBundle = tasks.register<Sync>("stageBundle") {
+    description = "Lays out the bundle: launcher, battletech.jar and runtime/."
+    into(layout.buildDirectory.dir("bundle/$bundleName"))
+    from(jlinkRuntime) { into("runtime") }
+    from(tasks.shadowJar) { rename { "battletech.jar" } }
+    from("bundle") {
+        include(if (isWindows) "battletech.bat" else "battletech")
+        filePermissions { unix("rwxr-xr-x") }
+    }
+}
+
+val bundleSmokeTest = tasks.register<LauncherSmokeTest>("bundleSmokeTest") {
+    group = "verification"
+    description = "Runs the staged bundle's launcher with its bundled runtime."
+    dependsOn(stageBundle)
+    bundleDirectory.set(layout.buildDirectory.dir("bundle/$bundleName"))
+    expectedVersion.set(releaseVersion)
+}
+
+val bundleArchive = if (isWindows) {
+    tasks.register<Zip>("bundle") { archiveFileName.set("$bundleName.zip") }
+} else {
+    tasks.register<Tar>("bundle") {
+        archiveFileName.set("$bundleName.tar.gz")
+        compression = Compression.GZIP
+    }
+}
+bundleArchive.configure {
+    group = "distribution"
+    description = "Packs the bundle with its own Java runtime for this OS and CPU into build/release."
+    dependsOn(bundleSmokeTest)
+    // Archives normalize permissions by default; keep the launcher and runtime/bin executables runnable.
+    from(stageBundle) {
+        into(bundleName)
+        useFileSystemPermissions()
+    }
+    destinationDirectory.set(releaseDirectory)
 }
 
 tasks.named("startScripts") {

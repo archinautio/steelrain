@@ -1,0 +1,119 @@
+name: Release
+
+# `./gradlew release` tags vX.Y.Z locally; pushing that tag runs this workflow. It builds the jar,
+# then a bundle with its own Java runtime on each OS and CPU, and attaches them all to a GitHub
+# release whose notes git-cliff writes from the Conventional Commits since the previous tag.
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  jar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      - name: Check that the tag matches the project version
+        run: |
+          version="$(sed -n 's/^version=//p' gradle.properties)"
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match version=$version in gradle.properties"
+            exit 1
+          fi
+      - name: Build, test and package the jar
+        run: ./gradlew build :tui:releaseJar
+      - uses: actions/upload-artifact@v5
+        with:
+          name: jar
+          path: tui/build/release/*
+          if-no-files-found: error
+
+  bundle:
+    needs: jar
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [macos-latest, ubuntu-latest, ubuntu-24.04-arm, windows-latest]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '25'
+      # :tui:bundle runs :tui:bundleSmokeTest first, which starts the game with the bundled runtime.
+      - name: Package the bundle with its own Java runtime
+        run: ./gradlew :tui:bundle
+      - uses: actions/upload-artifact@v5
+        with:
+          name: bundle-${{ matrix.runner }}
+          path: tui/build/release/*
+          if-no-files-found: error
+
+  release:
+    needs: [jar, bundle]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          # git-cliff needs the earlier tags to find where this release starts.
+          fetch-depth: 0
+      - uses: actions/download-artifact@v5
+        with:
+          path: build/release
+          merge-multiple: true
+      - name: Find the previous release
+        run: |
+          previous="$(git describe --tags --abbrev=0 --match 'v*' HEAD^ 2>/dev/null || true)"
+          # Before the first release, the notes start at the initial commit.
+          echo "PREVIOUS=$previous" >> "$GITHUB_ENV"
+          echo "CHANGES_SINCE=${previous:-$(git rev-list --max-parents=0 HEAD)}" >> "$GITHUB_ENV"
+      - name: Generate the release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          version: v2.14.2
+          config: cliff.toml
+          args: --strip header ${{ env.CHANGES_SINCE }}..${{ github.ref_name }}
+        env:
+          OUTPUT: build/changes.md
+      - name: Add the download guide and the full changelog link
+        run: |
+          {
+            cat build/changes.md
+            echo
+            echo "### Downloads"
+            echo
+            echo "- **battletech-<version>-<os>-<arch>**: includes its own Java. Unpack it and run \`battletech\` (\`battletech.bat\` on Windows)."
+            echo "- **battletech-<version>.jar**: needs Java 25 or later. Run \`java -jar battletech-<version>.jar\`."
+            echo
+            echo "See [Getting started](https://archinautio.github.io/battletech/) for details."
+            if [ -n "$PREVIOUS" ]; then
+              echo
+              echo "**Full changelog**: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$PREVIOUS...$GITHUB_REF_NAME"
+            fi
+          } > build/release-notes.md
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --verify-tag \
+            --title "BattleTech ${GITHUB_REF_NAME#v}" \
+            --notes-file build/release-notes.md \
+            build/release/*

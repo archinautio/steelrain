@@ -14,7 +14,7 @@ Not needed for everyday context — read the row's doc when its trigger applies.
 | `docs/site/` | Changing anything a player sees (a command, option, key, message, file format, or rule): update the public page that owns it in the same change. Player-facing only — no internals. |
 | `docs/documentation.md` | Adding or moving documentation, or previewing/validating/publishing the public site (`zensical build --clean --strict`). |
 | `docs/architecture.md` | Navigating inside a module or moving content between doc tiers. Package layout, invariant rationale. |
-| `docs/build.md` | Touching `buildSrc/`, a `build.gradle.kts`, module dependencies, or `unit/`/`map/`/`mech/`/`theme/`/shadow-jar packaging. |
+| `docs/build.md` | Touching `buildSrc/`, a `build.gradle.kts`, module dependencies, `unit/`/`map/`/`mech/`/`theme/`/shadow-jar packaging, the version, or release packaging/workflow. |
 | `docs/wire-protocol.md` | Adding or changing a wire-crossing `@Serializable sealed` variant, a failing wire-discriminator test, or a non-additive protocol change. |
 | `docs/tui-testing.md` | Hand-checking TUI rendering that can't be expressed as a unit test; automated tests are the primary strategy. |
 | `docs/color-themes.md` | Touching `theme/*.json`, color roles, or the theme contrast/distinctness guarantees (format: `docs/site/themes.md`). |
@@ -40,6 +40,9 @@ Not needed for everyday context — read the row's doc when its trigger applies.
 
 # Build and run the TUI (`:tui:run` throws by design — Gradle forks a JVM with no TTY)
 ./gradlew :tui:shadowJar && java -jar tui/build/libs/tui.jar
+
+# Release downloads for this OS into tui/build/release (cutting a release: docs/build.md)
+./gradlew :tui:releaseJar :tui:bundle
 ```
 
 ## Architecture

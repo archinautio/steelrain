@@ -1,2 +1,4 @@
 # Windows scripts need CRLF line endings
 *.bat text eol=crlf
+# Shell launchers stay LF so they run after a Windows checkout too.
+tui/bundle/battletech text eol=lf

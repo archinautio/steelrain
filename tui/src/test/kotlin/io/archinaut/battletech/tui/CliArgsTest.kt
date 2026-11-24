@@ -458,6 +458,13 @@ internal class CliArgsTest {
         }
 
         @Test
+        fun `--version prints the program version and exits 0`() {
+            val result = failing("--version")
+            assertEquals(0, result.statusCode)
+            assertTrue(result.output.contains("battletech $BATTLETECH_VERSION"))
+        }
+
+        @Test
         fun `combining list flags prints every section, maps before mechs before units`() {
             val output = failing("--list-units", "--list-mechs", "--list-maps", "hot-seat").output
             assertTrue(output.contains("Maps:"))

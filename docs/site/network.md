@@ -22,7 +22,7 @@ While you set up the match, the joining player sees your choices on a read-only 
 ## Host from the command line
 
 ```sh
-java -jar tui/build/libs/tui.jar host --map river-valley
+battletech host --map river-valley
 ```
 
 This starts the match with the selected map and unit collection as soon as the other player
@@ -32,7 +32,7 @@ joins. The session ID is shown in the LOG panel. `--port` changes the port; see
 ## Join
 
 ```sh
-java -jar tui/build/libs/tui.jar join 192.168.1.20 --session UANS3U
+battletech join 192.168.1.20 --session UANS3U
 ```
 
 Give the host's IP address or name, followed by `:port` if the host is not using port 2470, and the
@@ -46,7 +46,7 @@ you.
 A dedicated server runs a match with no game screen, and both players join it:
 
 ```sh
-java -jar tui/build/libs/tui.jar server --port 2470 --map lake-area
+battletech server --port 2470 --map lake-area
 ```
 
 It prints the session ID and port when it starts:

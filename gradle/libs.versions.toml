@@ -8,6 +8,7 @@ konsist = "0.18.1"
 clikt = "5.1.0"
 mordant = "3.1.1"
 shadow = "9.4.2"
+release = "3.2.0"
 tenter = "0.2.1"
 kotlinx-coroutines = "1.11.0"
 kotlinx-serialization = "1.9.0"
@@ -33,6 +34,7 @@ kotlin-serialization-plugin = { module = "org.jetbrains.kotlin:kotlin-serializat
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+release = { id = "net.researchgate.release", version.ref = "release" }
 
 [bundles]
 junit = ["junit-jupiter-api", "junit-jupiter-params"]
