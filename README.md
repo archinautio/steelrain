@@ -1,3 +1,5 @@
+<img src="docs/site/assets/battletech-logo.svg" alt="BattleTech logo: a mech head inside a hex tile, its visor a terminal prompt" width="128" height="128">
+
 # BattleTech
 
 A multi-module Kotlin project to play BattleTech tabletop game in a terminal (TUI).
