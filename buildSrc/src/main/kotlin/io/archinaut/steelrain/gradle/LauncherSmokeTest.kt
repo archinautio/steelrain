@@ -34,7 +34,8 @@ abstract class LauncherSmokeTest : DefaultTask() {
 
     @TaskAction
     fun run() {
-        val version = run("--version").trim()
+        // The first line is the version; the license and trademark notices follow it.
+        val version = run("--version").lineSequence().first().trim()
         val expected = "steelrain ${expectedVersion.get()}"
         if (version != expected) throw GradleException("--version printed '$version', expected '$expected'")
         for (flag in listOf("--list-maps", "--list-mechs", "--list-units", "--list-themes")) {
