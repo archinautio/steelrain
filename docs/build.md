@@ -80,5 +80,10 @@ All release files land in `tui/build/release/`:
   - The archive task calls `useFileSystemPermissions()`, because Gradle archives otherwise
     normalize permissions and drop the execute bits of the launcher and `runtime/bin/*`.
 
-The bundles are not signed, so macOS Gatekeeper blocks a downloaded one until the player removes
-the quarantine attribute (`docs/site/index.md` explains how).
+macOS runs a downloaded bundle without a Gatekeeper warning, even though the project signs
+nothing: the launcher is a shell script, which Gatekeeper does not assess, and every native file
+in `runtime/` comes from Temurin, signed with the Eclipse Foundation's Developer ID. This was
+checked with a Chrome download unpacked in Finder, where every file carried
+`com.apple.quarantine`. It holds only while the release workflow's `setup-java` uses
+`distribution: temurin` (or another signed JDK); with an unsigned JDK, players would need to clear
+the quarantine attribute before the first run.

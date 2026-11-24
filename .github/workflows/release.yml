@@ -51,6 +51,9 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - uses: actions/checkout@v6
+      # The bundled runtime is copied from this JDK. Temurin's macOS binaries are signed with a
+      # Developer ID, which is why macOS runs a downloaded bundle without a Gatekeeper warning.
+      # Keep a signed distribution here (see docs/build.md "Release packaging").
       - uses: actions/setup-java@v5
         with:
           distribution: temurin

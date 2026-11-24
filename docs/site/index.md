@@ -41,14 +41,6 @@ Pick one:
 - **The jar**, `steelrain-<version>.jar`, if you already have **Java 25** or later. Run it with
   `java -jar steelrain-<version>.jar`.
 
-!!! warning "macOS blocks the first run"
-    The downloads are not signed by Apple, so macOS may refuse to open them, saying it cannot
-    verify the developer. Remove the download mark from the unpacked folder once:
-
-    ```sh
-    xattr -dr com.apple.quarantine steelrain-<version>-macos-aarch64
-    ```
-
 These pages write the game's command as `steelrain`. With the jar, type
 `java -jar steelrain-<version>.jar` in its place; when you build from source, type
 `java -jar tui/build/libs/tui.jar`. Run `steelrain --version` to see which version you have.
