@@ -113,7 +113,16 @@ val jlinkRuntime = tasks.register<JlinkRuntime>("jlinkRuntime") {
 val stageBundle = tasks.register<Sync>("stageBundle") {
     description = "Lays out the bundle: launcher, steelrain.jar and runtime/."
     into(layout.buildDirectory.dir("bundle/$bundleName"))
-    from(jlinkRuntime) { into("runtime") }
+    from(jlinkRuntime) {
+        into("runtime")
+        // jlink writes legal/ read-only, which would stop the next run from replacing those files.
+        // Add owner write to each file's own mode; `permissions { }` alone would start from Gradle's
+        // default mode and drop bin/'s execute bits.
+        eachFile {
+            val mode = permissions.toUnixNumeric() or "200".toInt(8)
+            permissions { unix(mode) }
+        }
+    }
     from(tasks.shadowJar) { rename { "steelrain.jar" } }
     from(rootProject.layout.projectDirectory.file("LICENSE"))
     from("bundle") {
