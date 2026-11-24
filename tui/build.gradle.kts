@@ -15,10 +15,6 @@ application {
     applicationDefaultJvmArgs = listOf("--enable-native-access=$nativeAccess")
 }
 
-repositories {
-    mavenLocal()
-}
-
 tasks.named<ProcessResources>("processResources") {
     from(rootProject.layout.projectDirectory.dir("theme")) {
         into("theme")
