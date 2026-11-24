@@ -22,6 +22,8 @@ The truecolor themes fill each hex with a terrain color. The 256- and 16-color t
 on the plain background and show the terrain through the icon's color and shape. The 16-color
 themes use your terminal's own palette, so their exact look depends on your terminal settings.
 
+![The same corner of the map in four themes: dark and light (top), dark-256 and dark-16 (bottom)](assets/screenshots/themes.png)
+
 ## Custom themes
 
 `--theme` also accepts the path of a theme file:

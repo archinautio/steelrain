@@ -12,6 +12,9 @@ including any custom maps and mechs the host registered.
    [Setting up a match](setup.md#choose-a-mode)).
 2. The MODE panel shows the session ID, the port, and the `join` command for each of your network
    addresses. Send one of them to the other player.
+
+    ![The MODE panel in host mode: session ID, port, the join command, and Player 2 waiting](assets/screenshots/host-panel.png)
+
 3. When Player 2 connects, choose the map and both forces, then press `c` to start.
 
 While you set up the match, the joining player sees your choices on a read-only setup screen.

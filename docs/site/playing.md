@@ -18,6 +18,11 @@ Below it, the screen is divided into panels. Each panel's number is the key that
 
 Some panels appear only in the phase that uses them.
 
+Maximize **UNIT STATUS** (`1`, then `+`) for the full record sheet of the unit under the cursor,
+with its armor diagram. Filled pips are armor already lost:
+
+![The maximized UNIT STATUS panel: a damaged Wolverine's data, weapons, and armor diagram](assets/screenshots/record-sheet.png)
+
 ### Panels and the map
 
 - Press a panel's number to focus it. Press `+` or `-` to enlarge or shrink the focused panel; a
@@ -48,6 +53,10 @@ automatically, and their results appear in the LOG.
 
 The match ends when only one side still has surviving units. See [Victory](rules/victory.md).
 
+The LOG keeps the whole story of the match, turn by turn:
+
+![The LOG panel: weapon and punch hits with their damage, the heat phase, and the start of turn 2](assets/screenshots/log.png)
+
 In a hot-seat match the banner names the player who must act; pass the keyboard to them. In a
 network match, when it is not your turn the game shows **Waiting for opponent**.
 
@@ -63,6 +72,17 @@ Players take turns activating units, one or more per turn as the banner says (se
 3. **Choose the facing**: press `Enter` to confirm the path, then pick the final facing with
    `q` `w` `e` `a` `s` `d`. As a shortcut, press `Q` `W` `E` `A` `S` `D` (with `Shift`) while
    choosing the destination to move and face in one step.
+
+Each reachable hex shows arrows for the facings the unit can end in there. Walking hexes are
+white, running hexes orange:
+
+![Walking: white arrows mark the hexes the Hunchback H1 can walk to](assets/screenshots/move-walk.png)
+
+![Running: orange arrows reach further from H1](assets/screenshots/move-run.png)
+
+After confirming the path, the destination hex shows the keys of the facings you can choose:
+
+![Choosing the facing: the destination hex shows the keys q w e a s d](assets/screenshots/move-facing.png)
 
 To stay in place, choose the unit's own hex as the destination. `Esc` goes back one step. A
 prone unit tries to stand up first.
@@ -99,9 +119,16 @@ lost initiative.
 4. Press `Tab` to move on to your next attacker, or `Esc` to go back.
 5. Press `c` to commit your declarations. Units with nothing declared do not fire.
 
+Each weapon shows its target number and chance to hit, with the modifiers that make it up. The
+first target you fire at is the primary target, marked `[P]`:
+
+![Declaring fire: the target's status, the TARGETS panel with checked weapons and their hit chances, and the declared attacks](assets/screenshots/attack-targets.png)
+
 Attacks are resolved together once every unit has had its turn to declare, so a unit destroyed
 this phase still fires. Results appear in **ATTACK RESULTS** and
-the LOG. See [To-hit modifiers](rules/to-hit-modifiers.md), [Line of sight](rules/line-of-sight.md)
+the LOG: the dice rolled, hit or miss, and where the damage landed.
+
+![The ATTACK RESULTS panel beside the map: each weapon's roll, HIT, and the damage per location](assets/screenshots/attack-results.png) See [To-hit modifiers](rules/to-hit-modifiers.md), [Line of sight](rules/line-of-sight.md)
 and [Armor and damage](rules/armor-damage.md).
 
 ## Physical attacks
@@ -110,6 +137,8 @@ Physical attacks work like weapon attacks, but the TARGETS panel lists the punch
 unit can make against adjacent enemies. Press `Space` to choose a punch or kick, `Tab` for the
 next attacker, and `c` to commit. There is no torso twist. See
 [Physical attacks](rules/physical-attacks.md).
+
+![Declaring a physical attack: the TARGETS panel offers a left punch, a right punch and a kick against the adjacent Wolverine](assets/screenshots/physical-targets.png)
 
 ### Attack keys
 
@@ -125,6 +154,10 @@ next attacker, and `c` to commit. There is no torso twist. See
 | `c` | Commit the declarations |
 
 ## Keys on every screen
+
+Press `?` to open the HELP panel with the keys for what you are doing now, followed by these:
+
+![The HELP panel during movement: the movement keys, then the global keys](assets/screenshots/help.png)
 
 | Key | Action |
 |---|---|

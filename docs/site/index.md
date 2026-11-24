@@ -4,6 +4,8 @@ BattleTech is a turn-based game of armored combat on a hexagonal map, played in 
 players each command a force of BattleMechs, either sharing one terminal (hot-seat) or over the
 network.
 
+![The game screen during movement: the hex map with woods, water and four mechs, the hexes the selected Wolverine can reach, its pilot, heat and armor in UNIT STATUS, and the log](assets/screenshots/game-overview.png)
+
 !!! note "Early development"
     There are no released builds yet; you build the game from source. These pages follow the
     `main` branch.

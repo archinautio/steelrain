@@ -51,6 +51,30 @@ zensical build --clean --strict
 
 Do not commit `build/site/`, `.cache/`, or the virtual environment.
 
+## Screenshots
+
+The images in `docs/site/assets/screenshots/` are generated, not taken by hand.
+`scripts/docs-screenshots/take-screenshots.sh` plays scripted matches in a detached tmux session
+and renders the terminal into PNGs with a Nerd Font, cropping each to the part of the screen the
+page explains. Regenerate them all when the game's screens change:
+
+```sh
+python3 -m venv .venv-shots
+.venv-shots/bin/python -m pip install -r scripts/docs-screenshots/requirements.txt
+PYTHON=.venv-shots/bin/python scripts/docs-screenshots/take-screenshots.sh
+```
+
+- Needs `tmux`, JDK 25, and FiraCode Nerd Font Mono (in `~/Library/Fonts`, or set
+  `DOCS_FONT_DIR`). It builds the game first if `tui/build/libs/tui.jar` is missing; rebuild it
+  yourself to capture changes.
+- The match uses `scripts/docs-screenshots/duel.json`, a unit collection with adjacent, skilled
+  units so that attacks hit and physical attacks are possible.
+- Dice rolls are random, so look over the new images before committing them.
+- The host's network addresses are replaced with an example address before rendering.
+- Crops are given in terminal cells; adjust them in the script when a layout changes.
+
+Do not commit `.venv-shots/`.
+
 ## Publishing
 
 `.github/workflows/docs.yml` builds the site on every pull request and push to `main`, and deploys

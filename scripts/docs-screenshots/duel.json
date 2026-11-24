@@ -1,0 +1,8 @@
+{
+  "units": [
+    { "id": "A1", "player": 1, "variant": "AS7-D", "gunnerySkill": 1, "pilotingSkill": 4, "position": { "col": 4, "row": 5 }, "facing": "S" },
+    { "id": "H1", "player": 1, "variant": "HBK-4G", "gunnerySkill": 3, "pilotingSkill": 4, "position": { "col": 2, "row": 5 }, "facing": "SE" },
+    { "id": "W1", "player": 2, "variant": "WVR-6R", "gunnerySkill": 2, "pilotingSkill": 4, "position": { "col": 4, "row": 6 }, "facing": "N" },
+    { "id": "L1", "player": 2, "variant": "LCT-1V", "gunnerySkill": 3, "pilotingSkill": 4, "position": { "col": 7, "row": 5 }, "facing": "NW" }
+  ]
+}
