@@ -37,7 +37,7 @@ taken as a built-in theme name. `--list-themes` lists the built-in themes, plus 
 with `--theme`.
 
 The easiest start is a copy of a built-in theme from the
-[`theme/` directory](https://github.com/alejandropg/battletech/tree/main/theme) of the repository.
+[`theme/` directory](https://github.com/archinautio/battletech/tree/main/theme) of the repository.
 
 ### File format
 

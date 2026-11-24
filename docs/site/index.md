@@ -24,7 +24,7 @@ network.
 ## Build
 
 ```sh
-git clone https://github.com/alejandropg/battletech.git
+git clone https://github.com/archinautio/battletech.git
 cd battletech
 ./gradlew :tui:shadowJar
 ```
