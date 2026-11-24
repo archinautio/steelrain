@@ -474,7 +474,7 @@ internal class CliArgsTest {
 
         @Test
         fun `--version prints the GPL license notice`() {
-            assertTrue(failing("--version").output.contains("GNU GPL version 3 or later"))
+            assertTrue(failing("--version").output.contains("GNU GPL version 3 <"))
         }
 
         @Test

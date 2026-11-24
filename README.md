@@ -36,9 +36,8 @@ With no command the game opens the interactive setup screen. See the
 Copyright (C) 2026 the project's contributors.
 
 This program is free software: you can redistribute it and/or modify it under the terms of the
-GNU General Public License as published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY; see
-[LICENSE](LICENSE) for the full text.
+GNU General Public License version 3 as published by the Free Software Foundation. It is
+distributed WITHOUT ANY WARRANTY; see [LICENSE](LICENSE) for the full text.
 
 ## Legal
 
