@@ -1,14 +1,15 @@
-<img src="docs/site/assets/battletech-logo.svg" alt="BattleTech logo: a mech head inside a hex tile, its visor a terminal prompt" width="128" height="128">
+<img src="docs/site/assets/steelrain-logo.svg" alt="Steelrain logo: a mech head inside a hex tile, its visor a terminal prompt" width="128" height="128">
 
-# BattleTech
+# Steelrain
 
-A multi-module Kotlin project to play BattleTech tabletop game in a terminal (TUI).
+A turn-based game of armored mech combat on a hex map, played in a terminal (TUI), following
+the BattleTech tabletop rules. Written in Kotlin.
 
 The TUI consumes [Tenter](https://github.com/archinautio/tenter) (`io.archinaut:tenter`) as a library resolved from Maven Central.
 
 Supports hot-seat and network play.
 
-- [User documentation](https://archinautio.github.io/battletech/) — installation, setup, controls,
+- [User documentation](https://archinautio.github.io/steelrain/) — installation, setup, controls,
   network play, custom content, and the game rules.
 - [Documentation source](docs/site/index.md) — read the player guides in this checkout.
 - [Architecture](docs/architecture.md) — module boundaries and implementation invariants.
@@ -16,7 +17,7 @@ Supports hot-seat and network play.
 
 ## Quick start
 
-Download the game from the [releases](https://github.com/archinautio/battletech/releases), either
+Download the game from the [releases](https://github.com/archinautio/steelrain/releases), either
 with its own Java or as a jar for Java 25; see
 [Getting started](docs/site/index.md#download). The game needs a terminal using a
 [Nerd Font](https://www.nerdfonts.com/).

@@ -1,0 +1,28 @@
+package io.archinaut.steelrain.tui.view.record
+
+import io.archinaut.steelrain.tui.view.SectionHeading
+import io.archinaut.tenter.widget.MeasurableWidget
+import io.archinaut.steelrain.tactical.unit.VisibleUnit
+import io.archinaut.steelrain.tui.view.SpecialUnitStatusList
+import io.archinaut.steelrain.tui.view.UnitLabel
+import io.archinaut.tenter.widget.RowWriter
+
+/**
+ * The 'MECH DATA card: identity, tonnage, movement points, and public special statuses —
+ * everything the record sheet's top-left box shows that's visible for ANY unit, own or enemy.
+ * [VisibleUnit]-typed rather than
+ * [io.archinaut.steelrain.tactical.unit.CombatUnit]-typed so the same card serves both
+ * [io.archinaut.steelrain.tui.view.record.MechRecordSheetView] and [ForeignRecordSheetView].
+ */
+internal class MechDataCard(private val unit: VisibleUnit) : MeasurableWidget {
+
+    override fun write(writer: RowWriter) {
+        writer.draw(SectionHeading("'MECH DATA"))
+        writer.writeLine(UnitLabel.of(unit), SheetStyles.ACCENT)
+        writer.writeLine("Tonnage : ${unit.tonnage}", SheetStyles.TEXT_PRIMARY)
+        writer.writeLine("Walking : ${unit.walkingMP}", SheetStyles.TEXT_PRIMARY)
+        writer.writeLine("Running : ${unit.runningMP}", SheetStyles.TEXT_PRIMARY)
+        if (unit.jumpMP > 0) writer.writeLine("Jumping : ${unit.jumpMP}", SheetStyles.TEXT_PRIMARY)
+        writer.draw(SpecialUnitStatusList(unit))
+    }
+}

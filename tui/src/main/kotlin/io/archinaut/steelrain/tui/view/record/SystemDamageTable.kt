@@ -1,0 +1,43 @@
+package io.archinaut.steelrain.tui.view.record
+
+import io.archinaut.steelrain.tui.view.SectionHeading
+import io.archinaut.tenter.widget.MeasurableWidget
+import io.archinaut.steelrain.tactical.unit.CombatUnit
+import io.archinaut.steelrain.tactical.unit.ComponentCritStatus
+import io.archinaut.steelrain.tactical.unit.criticalDamageStatus
+import io.archinaut.steelrain.tui.icon.emptyCircleIcon
+import io.archinaut.steelrain.tui.icon.filledCircleIcon
+import io.archinaut.steelrain.tui.view.MechLabels
+import io.archinaut.steelrain.tui.view.formatCritEffect
+import io.archinaut.tenter.widget.RowWriter
+
+/** The SYSTEM DAMAGE card: hit tracks and penalties for the 'Mech's shared components. */
+internal class SystemDamageTable(private val unit: CombatUnit) : MeasurableWidget {
+
+    override fun write(writer: RowWriter) {
+        writer.draw(SectionHeading("SYSTEM DAMAGE"))
+        val track = PipTrack(filledCircleIcon(), emptyCircleIcon(), perRow = 12)
+        for (status in unit.criticalDamageStatus()) {
+            writeComponentStatus(writer, track, status)
+        }
+    }
+
+    private fun writeComponentStatus(writer: RowWriter, track: PipTrack, status: ComponentCritStatus) {
+        val label = MechLabels.component(status.component).padEnd(PIP_COLUMN)
+        val row = writer.row
+        writer.write(0, label, SheetStyles.TEXT_PRIMARY)
+        track.forEachPip(
+            used = status.hits,
+            capacity = status.capacity,
+            usedStyle = SheetStyles.DANGER,
+            emptyStyle = SheetStyles.TEXT_PRIMARY,
+        ) { column, pipRow, glyph, style -> writer.write(PIP_COLUMN + column, glyph, style, row = row + pipRow) }
+        repeat(track.rows(status.capacity)) { writer.newLine() }
+        for (penalty in status.penalties) writer.writeLine("  ${formatCritEffect(penalty)}", SheetStyles.DANGER)
+    }
+
+    private companion object {
+        /** Where each component's pip track starts, past its padded label. */
+        private const val PIP_COLUMN: Int = 14
+    }
+}

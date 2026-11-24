@@ -1,4 +1,4 @@
-rootProject.name = "battletech"
+rootProject.name = "steelrain"
 
 include(
     "strategic",

@@ -56,7 +56,7 @@ tmux kill-session -t setup
 Checklist:
 
 - Stage 1 shows only panel `[1] MODE`; the banner (or, in a narrower terminal, the plain
-  `BATTLETECH` fallback line) and the prompt/help row render above it.
+  `STEELRAIN` fallback line) and the prompt/help row render above it.
 - `c` while unlocked reveals `[2] MAP`, `[3] PLAYER 1`, `[4] PLAYER 2` in one frame and moves
   focus to MAP — nothing else about panel 1 changes (it stays visible, inert to further editing).
 - `?` opens HELP maximized over the content area, listing the SETUP section's own chords (`1`-`4`,

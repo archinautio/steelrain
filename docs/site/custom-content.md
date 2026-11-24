@@ -10,7 +10,7 @@ register them on the command line:
 | [Unit collection](#unit-collections) | `--add-unit <path>` | `--unit <name>` |
 
 ```sh
-battletech \
+steelrain \
   --add-map ./maps/arena.json \
   --add-mech ./mechs/custom.json \
   --add-unit ./units/duel.json \

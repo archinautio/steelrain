@@ -1,6 +1,6 @@
 plugins {
-    id("battletech.kotlin-library")
-    id("battletech.kotlin-serialization")
+    id("steelrain.kotlin-library")
+    id("steelrain.kotlin-serialization")
 }
 
 dependencies {

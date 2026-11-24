@@ -9,7 +9,7 @@ body = """
 ### Breaking changes 💥
 {% for commit in breaking %}
 - {% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message | upper_first }} \
-([{{ commit.id | truncate(length=7, end="") }}](https://github.com/archinautio/battletech/commit/{{ commit.id }}))\
+([{{ commit.id | truncate(length=7, end="") }}](https://github.com/archinautio/steelrain/commit/{{ commit.id }}))\
 {%- if commit.breaking_description and commit.breaking_description != commit.message %}
 {%- set description = commit.breaking_description | replace(from="\n", to=" ") | upper_first %}
 {# git-cliff trims leading spaces in the template, so the indent is a string. #}\
@@ -22,7 +22,7 @@ body = """
 {% for commit in group_commits %}
 {#- The Dependency updates heading already says what the deps scope would. #}
 - {% if commit.scope and commit.scope != "deps" %}**{{ commit.scope }}:** {% endif %}{{ commit.message | upper_first }} \
-([{{ commit.id | truncate(length=7, end="") }}](https://github.com/archinautio/battletech/commit/{{ commit.id }}))
+([{{ commit.id | truncate(length=7, end="") }}](https://github.com/archinautio/steelrain/commit/{{ commit.id }}))
 {%- endfor %}
 {% endfor -%}
 """

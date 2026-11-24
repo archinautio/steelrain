@@ -1,10 +1,10 @@
 # Command line
 
 ```text
-battletech [<options>] [<command> [<command options>]]
+steelrain [<options>] [<command> [<command options>]]
 ```
 
-`battletech` stands for the way you start the game; see [Download](index.md#download) for the
+`steelrain` stands for the way you start the game; see [Download](index.md#download) for the
 jar and from-source equivalents.
 
 With no command, the game opens the [setup screen](setup.md). A command starts a match directly:
@@ -19,8 +19,8 @@ With no command, the game opens the [setup screen](setup.md). A command starts a
 Run `--help` on its own, or after a command, for the full option list:
 
 ```sh
-battletech --help
-battletech host --help
+steelrain --help
+steelrain host --help
 ```
 
 !!! warning "Options go before the command"
@@ -28,7 +28,7 @@ battletech host --help
     come after it:
 
     ```sh
-    battletech --add-map arena.json hot-seat --map arena
+    steelrain --add-map arena.json hot-seat --map arena
     ```
 
 ## General options
@@ -52,7 +52,7 @@ registers the map `arena`. Listings include built-in and registered content, mar
 entries `(external)`. Several `--list-*` options can be combined:
 
 ```sh
-battletech --add-map ./maps/arena.json --list-maps --list-units
+steelrain --add-map ./maps/arena.json --list-maps --list-units
 ```
 
 See [Custom maps, units and mechs](custom-content.md) for the file formats.
@@ -61,7 +61,7 @@ See [Custom maps, units and mechs](custom-content.md) for the file formats.
 
 | Option | Meaning | Default |
 |---|---|---|
-| `--map <name>` | The map to play on. | `battletech-classic` |
+| `--map <name>` | The map to play on. | `classic` |
 | `--unit <name>` | The unit collection to play. | `default` |
 | `--port <number>` | TCP port to listen on (`host` and `server` only). | `2470` |
 
@@ -70,7 +70,7 @@ and `--add-unit`. A unit collection has no map of its own, so the same collectio
 any map large enough for its starting positions.
 
 ```sh
-battletech --add-unit ./units/duel.json hot-seat --map river-valley --unit duel
+steelrain --add-unit ./units/duel.json hot-seat --map river-valley --unit duel
 ```
 
 ## `join`
@@ -90,7 +90,7 @@ join <address>[:<port>] --session <id>
 
 | Kind | Names |
 |---|---|
-| Maps | `battletech-classic`, `lake-area`, `river-valley`, `test` |
+| Maps | `classic`, `lake-area`, `river-valley`, `test` |
 | Unit collections | `default` |
 | Mech collections | `classic` |
 | Themes | `dark`, `light`, `dark-256`, `light-256`, `dark-16`, `light-16` |

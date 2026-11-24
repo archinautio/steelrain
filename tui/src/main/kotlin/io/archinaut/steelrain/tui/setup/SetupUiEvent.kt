@@ -1,0 +1,13 @@
+package io.archinaut.steelrain.tui.setup
+
+import com.github.ajalt.mordant.input.InputEvent
+import io.archinaut.tenter.screen.Size
+
+/** Events the setup screen's loop multiplexes — mirrors `io.archinaut.steelrain.tui.loop.UiEvent`. */
+internal sealed interface SetupUiEvent {
+    data class Input(val event: InputEvent) : SetupUiEvent
+    data class Resized(val size: Size) : SetupUiEvent
+    data class FlashExpired(val generation: Long) : SetupUiEvent
+    data class Lobby(val event: LobbyEvent) : SetupUiEvent
+    data object Quit : SetupUiEvent
+}

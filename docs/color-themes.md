@@ -2,14 +2,14 @@
 
 The TUI's six built-in color themes (`dark`, `light`, `dark-256`, `light-256`, `dark-16`,
 `light-16`) are data, not code: each is a JSON file in the repository's root `theme/` directory,
-loaded at runtime by `io.archinaut.battletech.tui.screen.resolveTheme` — see that function's KDoc and
-`io.archinaut.battletech.tui.screen.ThemeFile` for the exact resolution and validation rules. This doc covers
+loaded at runtime by `io.archinaut.steelrain.tui.screen.resolveTheme` — see that function's KDoc and
+`io.archinaut.steelrain.tui.screen.ThemeFile` for the exact resolution and validation rules. This doc covers
 loading and, since JSON can't hold comments, the design rationale behind the values
-themselves. `io.archinaut.battletech.tui.screen.BuiltInThemesTest` enforces every contrast/distinctness/ordering
+themselves. `io.archinaut.steelrain.tui.screen.BuiltInThemesTest` enforces every contrast/distinctness/ordering
 guarantee described below against the actual packaged files — if this doc and that test ever
 disagree, the test is authoritative.
 
-Independent Tenter consumers do not need these BattleTech assets. `io.archinaut.tenter.color.ColorScheme.Default`
+Independent Tenter consumers do not need these Steelrain assets. `io.archinaut.tenter.color.ColorScheme.Default`
 is a ready-to-use ANSI-16 color scheme for Tenter's standard roles; terminal-defined ANSI colors
 determine its appearance. Consumers can provide a hand-authored `ColorScheme` or use `MapColorScheme`
 for validated file-backed/custom color schemes. Color schemes are stable for a renderer's lifetime;
@@ -24,14 +24,14 @@ The file format (color spaces, role tables) is documented for players in
 - One file per theme, one color space per file — there is no conversion between tiers (see
   `io.archinaut.tenter.color.TerminalColor`'s KDoc).
 - `standard` must hold exactly the 12 `io.archinaut.tenter.color.StandardRole` names, `app` exactly the
-  `io.archinaut.battletech.tui.screen.AppRole` names, `board` exactly the
-  `io.archinaut.battletech.tui.screen.BoardRole` names, and `heatScale` exactly the
-  `io.archinaut.battletech.tui.screen.HeatScaleRole` names. A missing or unrecognized role name fails
+  `io.archinaut.steelrain.tui.screen.AppRole` names, `board` exactly the
+  `io.archinaut.steelrain.tui.screen.BoardRole` names, and `heatScale` exactly the
+  `io.archinaut.steelrain.tui.screen.HeatScaleRole` names. A missing or unrecognized role name fails
   to load with a `ThemeLoadException` naming the offending role and table — the load-time
   replacement for the compile-time exhaustiveness check a hand-written `ColorScheme` object gets
   for free. There is deliberately no unverified fallback color and no legacy table name.
-- Resolution is not theme-specific: `io.archinaut.battletech.tui.screen.ThemeLoader` is a thin adapter over
-  `io.archinaut.battletech.tactical.io.ResourceOrFileLoader` (see `docs/architecture.md`), the same generic
+- Resolution is not theme-specific: `io.archinaut.steelrain.tui.screen.ThemeLoader` is a thin adapter over
+  `io.archinaut.steelrain.tactical.io.ResourceOrFileLoader` (see `docs/architecture.md`), the same generic
   loader maps use. A packaged theme is resolved as `theme/<name>.json` on the classpath;
   `theme/index.json` lists the built-in names so an unrecognized `--theme` name can name the
   built-ins in its error, since a jar can't otherwise list a resource directory. For
@@ -155,6 +155,6 @@ two target markers, active vs. border, and the terrain icon set — never share 
 Edit (or add) a file under `theme/`; if adding one, also add its name to `theme/index.json`. No
 Kotlin change or rebuild is required to *use* a custom theme (`--theme <path>` loads any theme file
 directly), but a new **built-in** theme should still get the same verification the six shipped ones
-get: extend `io.archinaut.battletech.tui.screen.BuiltInThemesTest`'s built-in theme list (it already reads from
+get: extend `io.archinaut.steelrain.tui.screen.BuiltInThemesTest`'s built-in theme list (it already reads from
 `ThemeLoader().builtInNames()`, so this is automatic) and confirm it against the contrast/
 distinctness guarantees above before shipping it.

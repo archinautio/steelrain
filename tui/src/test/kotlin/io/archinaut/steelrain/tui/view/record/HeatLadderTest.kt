@@ -1,0 +1,125 @@
+package io.archinaut.steelrain.tui.view.record
+
+import io.archinaut.steelrain.tui.screen.AppRole
+import io.archinaut.steelrain.tactical.unit.HeatSink
+import io.archinaut.steelrain.tactical.unit.HeatSinkType
+import io.archinaut.steelrain.tactical.unit.HeatSource
+import io.archinaut.steelrain.tui.aGameMap
+import io.archinaut.steelrain.tui.aUnit
+import io.archinaut.steelrain.tui.screen.HeatScaleRole
+import io.archinaut.steelrain.tui.view.render
+import io.archinaut.tenter.color.StandardRole
+import io.archinaut.tenter.color.ColorRole
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import io.archinaut.tenter.terminal.CompletedFrame
+
+/** [HeatLadder] — the current/projected heat gauges plus the 30-to-0 heat scale rungs. */
+internal class HeatLadderTest {
+
+    private fun rowForHeat(headerRow: Int, heat: Int): Int = headerRow + 1 + (30 - heat)
+
+    private fun assertRowBackground(buffer: CompletedFrame, row: Int, expected: ColorRole) {
+        for (column in 0 until buffer.width) {
+            assertEquals(expected, buffer.get(column, row).bg, "column $column on row $row")
+        }
+    }
+
+    @Test
+    fun `marks current heat solid and a different projected heat as draft`() {
+        // heat sink STS 10 -> dissipation 10, so heat 9 (no pending/committed sources) projects
+        // straight down to 0: two distinct rungs to mark, one current, one projected.
+        val unit = aUnit(currentHeat = 9)
+        val buffer = render(HeatLadder(unit, aGameMap(), emptyList()), width = 40, height = 60)
+
+        val headerRow = buffer.find("HEAT SCALE")!!.y
+
+        val currentRow = rowForHeat(headerRow, 9)
+        assertTrue(buffer.line(currentRow).contains("◀"))
+        assertEquals(StandardRole.TEXT_PRIMARY, buffer.get(0, currentRow).fg)
+        assertRowBackground(buffer, currentRow, HeatScaleRole.CURRENT_BG)
+
+        val projectedRow = rowForHeat(headerRow, 0)
+        assertTrue(buffer.line(projectedRow).contains("▶"))
+        assertEquals(AppRole.DRAFT, buffer.get(0, projectedRow).fg)
+        assertRowBackground(buffer, projectedRow, HeatScaleRole.COOLING_BG)
+        assertRowBackground(buffer, rowForHeat(headerRow, 5), HeatScaleRole.COOLING_BG)
+        assertEquals(StandardRole.TEXT_MUTED, buffer.get(0, rowForHeat(headerRow, 5)).fg)
+        assertRowBackground(buffer, rowForHeat(headerRow, 10), StandardRole.DEFAULT)
+    }
+
+    @Test
+    fun `highlights a projected heat increase through its endpoint`() {
+        val unit = aUnit(
+            currentHeat = 5,
+            heatSink = HeatSink(HeatSinkType.STS, 0),
+        )
+        val buffer = render(
+            HeatLadder(unit, aGameMap(), listOf(HeatSource("Weapons", 5))),
+            width = 40,
+            height = 60,
+        )
+
+        val headerRow = buffer.find("HEAT SCALE")!!.y
+
+        assertRowBackground(buffer, rowForHeat(headerRow, 5), HeatScaleRole.CURRENT_BG)
+        for (heat in 6..10) {
+            assertRowBackground(buffer, rowForHeat(headerRow, heat), HeatScaleRole.HEATING_BG)
+        }
+        assertEquals(StandardRole.TEXT_MUTED, buffer.get(0, rowForHeat(headerRow, 7)).fg)
+        assertEquals(AppRole.DRAFT, buffer.get(0, rowForHeat(headerRow, 10)).fg)
+        assertRowBackground(buffer, rowForHeat(headerRow, 4), StandardRole.DEFAULT)
+        assertRowBackground(buffer, rowForHeat(headerRow, 11), StandardRole.DEFAULT)
+    }
+
+    @Test
+    fun `uses only the current background when projected heat is unchanged`() {
+        val unit = aUnit(
+            currentHeat = 7,
+            heatSink = HeatSink(HeatSinkType.STS, 0),
+        )
+        val buffer = render(HeatLadder(unit, aGameMap(), emptyList()), width = 40, height = 60)
+
+        val headerRow = buffer.find("HEAT SCALE")!!.y
+        val currentRow = rowForHeat(headerRow, 7)
+
+        assertTrue(buffer.line(currentRow).contains("◀▶"))
+        assertRowBackground(buffer, currentRow, HeatScaleRole.CURRENT_BG)
+        assertRowBackground(buffer, rowForHeat(headerRow, 6), StandardRole.DEFAULT)
+        assertRowBackground(buffer, rowForHeat(headerRow, 8), StandardRole.DEFAULT)
+    }
+
+    @Test
+    fun `clips a projected heat increase to the visible scale`() {
+        val unit = aUnit(
+            currentHeat = 28,
+            heatSink = HeatSink(HeatSinkType.STS, 0),
+        )
+        val buffer = render(
+            HeatLadder(unit, aGameMap(), listOf(HeatSource("Weapons", 5))),
+            width = 40,
+            height = 60,
+        )
+
+        val headerRow = buffer.find("HEAT SCALE")!!.y
+
+        assertRowBackground(buffer, rowForHeat(headerRow, 28), HeatScaleRole.CURRENT_BG)
+        assertRowBackground(buffer, rowForHeat(headerRow, 29), HeatScaleRole.HEATING_BG)
+        assertRowBackground(buffer, rowForHeat(headerRow, 30), HeatScaleRole.HEATING_BG)
+        assertRowBackground(buffer, rowForHeat(headerRow, 27), StandardRole.DEFAULT)
+    }
+
+    @Test
+    fun `a rule's text prints only on the rung where it first applies`() {
+        val unit = aUnit(currentHeat = 0)
+        val buffer = render(HeatLadder(unit, aGameMap(), emptyList()), width = 40, height = 60)
+
+        val headerRow = buffer.find("HEAT SCALE")!!.y
+        // Movement penalty first kicks in at heat 5 (-1 MP); heat 6, 7 repeat the same rule
+        // and must NOT restate it.
+        assertTrue(buffer.line(rowForHeat(headerRow, 5)).contains("MP"))
+        assertTrue(!buffer.line(rowForHeat(headerRow, 6)).contains("MP"))
+        assertTrue(!buffer.line(rowForHeat(headerRow, 7)).contains("MP"))
+    }
+}

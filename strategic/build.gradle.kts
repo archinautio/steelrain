@@ -1,3 +1,3 @@
 plugins {
-    id("battletech.kotlin-library")
+    id("steelrain.kotlin-library")
 }

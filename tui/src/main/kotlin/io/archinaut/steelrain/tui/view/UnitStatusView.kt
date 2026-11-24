@@ -1,0 +1,199 @@
+package io.archinaut.steelrain.tui.view
+
+import io.archinaut.tenter.widget.MeasurableWidget
+import io.archinaut.steelrain.tactical.heat.projectHeat
+import io.archinaut.steelrain.tactical.model.GameMap
+import io.archinaut.steelrain.tactical.unit.CombatUnit
+import io.archinaut.steelrain.tactical.unit.ComponentCritStatus
+import io.archinaut.steelrain.tactical.unit.ForeignUnit
+import io.archinaut.steelrain.tactical.unit.HeatSource
+import io.archinaut.steelrain.tactical.unit.VisibleUnit
+import io.archinaut.steelrain.tactical.unit.criticalDamageStatus
+import io.archinaut.steelrain.tactical.unit.remainingShots
+import io.archinaut.steelrain.tui.icon.ammoIcon
+import io.archinaut.steelrain.tui.icon.emptyCircleIcon
+import io.archinaut.steelrain.tui.icon.filledCircleIcon
+import io.archinaut.steelrain.tui.icon.infinityIcon
+import io.archinaut.steelrain.tui.screen.BoardRole
+import io.archinaut.tenter.screen.Style
+import io.archinaut.tenter.color.StandardRole
+import io.archinaut.tenter.text.CellWidth
+import io.archinaut.tenter.widget.RowWriter
+
+internal class UnitStatusView(
+    private val subject: VisibleUnit?,
+    private val map: GameMap,
+    private val pendingHeat: List<HeatSource> = emptyList(),
+) : MeasurableWidget {
+
+    override fun write(writer: RowWriter) {
+        when (subject) {
+            null -> {
+                writer.writeLine("No unit selected", TEXT_PRIMARY_STYLE)
+                return
+            }
+            is ForeignUnit -> {
+                ForeignUnitPanel.render(writer, subject)
+                return
+            }
+            is CombatUnit -> Unit
+        }
+
+        val unit = subject
+
+        // UNIT
+        with(writer) {
+            writeLine(UnitLabel.of(unit), ACCENT_STYLE)
+            draw(SpecialUnitStatusList(unit))
+            newLine()
+        }
+
+        // PILOT
+        with(writer) {
+            draw(SectionHeading("PILOT"))
+            // Canonical 6-box "Hits" track (record sheet Pilot Data): filled = hits taken,
+            // empty = remaining boxes. No "health" concept in the rules — hits accumulate
+            // upward, each one forcing a Consciousness roll (PilotHits.kt).
+            val labelEnd = writer.write(0, "Hits".padEnd(9) + ": ", TEXT_PRIMARY_STYLE)
+            PilotHitsTrack.draw(
+                writer,
+                column = labelEnd.x,
+                stride = 1,
+                hits = unit.pilotHits,
+                filledStyle = DANGER_STYLE,
+                emptyStyle = TEXT_PRIMARY_STYLE,
+            )
+            writer.newLine()
+            writeLine("Gunnery  : ${unit.gunnerySkill}", TEXT_PRIMARY_STYLE)
+            writeLine("Piloting : ${unit.pilotingSkill}", TEXT_PRIMARY_STYLE)
+            newLine()
+        }
+
+        // MOVEMENT
+        with(writer) {
+            draw(SectionHeading("MOVEMENT"))
+            writeLine("Walk : ${unit.walkingMP}    Run : ${unit.runningMP}", TEXT_PRIMARY_STYLE)
+            if (unit.jumpMP > 0) writeLine("Jump : ${unit.jumpMP}", TEXT_PRIMARY_STYLE)
+            newLine()
+        }
+
+        // HEAT
+        with(writer) {
+            draw(SectionHeading("HEAT"))
+            draw(HeatGauges(unit, map, pendingHeat))
+
+            val projection = projectHeat(unit, map, pendingHeat)
+            val penalties = HeatPenalties.lines(unit.currentHeat, projection.projected)
+            if (penalties.isNotEmpty()) {
+                writeLine("Penalties")
+                for ((text, fg) in penalties) {
+                    writeLine(text, Style(fg))
+                }
+            }
+            newLine()
+        }
+
+        // ARMOR
+        with(writer) {
+            val armor = unit.armor
+            val is_ = unit.internalStructure
+            draw(SectionHeading("ARMOR"))
+            writeLocation(9, "HD", armor.head, is_.head, StandardRole.INFO)
+            newLine()
+            writeLocation(2, "LT", armor.leftTorso, is_.leftTorso, StandardRole.SUCCESS)
+            writeLocation(9, "CT", armor.centerTorso, is_.centerTorso, StandardRole.ACCENT)
+            writeLocation(16, "RT", armor.rightTorso, is_.rightTorso, StandardRole.SUCCESS)
+            newLine()
+            write(3, "r:%2d".format(armor.leftTorsoRear), Style.DEFAULT)
+            write(10, "r:%2d".format(armor.centerTorsoRear), Style.DEFAULT)
+            write(17, "r:%2d".format(armor.rightTorsoRear), Style.DEFAULT)
+            newLine()
+            writeLocation(0, "LA", armor.leftArm, is_.leftArm, StandardRole.SUCCESS)
+            writeLocation(17, "RA", armor.rightArm, is_.rightArm, StandardRole.SUCCESS)
+            newLine()
+            writeLocation(3, "LL", armor.leftLeg, is_.leftLeg, StandardRole.SUCCESS)
+            writeLocation(14, "RL", armor.rightLeg, is_.rightLeg, StandardRole.SUCCESS)
+            newLine()
+            newLine()
+
+            writeLine("Critical hit points", TEXT_PRIMARY_STYLE)
+            for (status in unit.criticalDamageStatus()) {
+                writeCritDots(writer, status)
+            }
+            newLine()
+
+            writeLine("Internal Structure", TEXT_PRIMARY_STYLE)
+            writeLocation(9, "HD", is_.head, is_.head, StandardRole.INFO)
+            newLine()
+            writeLocation(2, "LT", is_.leftTorso, is_.leftTorso, StandardRole.SUCCESS)
+            writeLocation(9, "CT", is_.centerTorso, is_.centerTorso, StandardRole.ACCENT)
+            writeLocation(16, "RT", is_.rightTorso, is_.rightTorso, StandardRole.SUCCESS)
+            newLine()
+            writeLocation(0, "LA", is_.leftArm, is_.leftArm, StandardRole.SUCCESS)
+            writeLocation(17, "RA", is_.rightArm, is_.rightArm, StandardRole.SUCCESS)
+            newLine()
+            writeLocation(3, "LL", is_.leftLeg, is_.leftLeg, StandardRole.SUCCESS)
+            writeLocation(14, "RL", is_.rightLeg, is_.rightLeg, StandardRole.SUCCESS)
+            repeat(2) { newLine() }
+        }
+
+        // WEAPONS
+        with(writer) {
+            draw(SectionHeading("WEAPONS"))
+            for (weapon in unit.weapons) {
+                val style = if (weapon.destroyed) DESTROYED_STYLE else TEXT_PRIMARY_STYLE
+                val right = weapon.ammoType?.let { type -> "${unit.remainingShots(type)} ${ammoIcon()}" }
+                    ?: infinityIcon()
+                writeRow("  ${weapon.name}", right, style)
+            }
+        }
+    }
+
+    /**
+     * Destroyed-vs-intact color rule shared by the ARMOR and Internal Structure sections: a
+     * zero-[structure] location renders red with a strikethrough (it's gone); an intact location
+     * renders in its normal [intactColor].
+     */
+    private fun RowWriter.writeLocation(padding: Int, label: String, value: Int, structure: Int, intactColor: StandardRole) {
+        val style = if (structure == 0) DESTROYED_STYLE else Style(intactColor)
+        write(padding, "%s:%2d".format(label, value), style)
+    }
+
+    /**
+     * Renders a "  Label : ●● ○" row where [status].hits (coerced to [status].capacity) dots are
+     * drawn filled/red and the remainder of capacity are drawn empty/white, reflecting the real
+     * destroyed-slot count against the rules cap. Below the dot row, renders one indented red
+     * line per entry in [status].penalties — both values come straight from
+     * [io.archinaut.steelrain.tactical.unit.criticalDamageStatus]; the only thing decided here is the
+     * column label for [status].component.
+     */
+    private fun writeCritDots(writer: RowWriter, status: ComponentCritStatus) {
+        val label = MechLabels.component(status.component)
+        val capacity = status.capacity
+        val destroyedCount = status.hits.coerceIn(0, capacity)
+        val label6 = label + " ".repeat((7 - CellWidth.of(label)).coerceAtLeast(0))
+        var col = writer.write(2, "$label6: ", TEXT_PRIMARY_STYLE).x
+        repeat(destroyedCount) {
+            writer.write(col, filledCircleIcon(), DANGER_STYLE)
+            col += 2
+        }
+        repeat(capacity - destroyedCount) {
+            writer.write(col, emptyCircleIcon(), TEXT_PRIMARY_STYLE)
+            col += 2
+        }
+        writer.newLine()
+        for (penalty in status.penalties) {
+            writer.write(4, formatCritEffect(penalty), DANGER_STYLE)
+            writer.newLine()
+        }
+    }
+
+    internal companion object {
+        internal const val TITLE: String = "UNIT STATUS"
+
+        private val TEXT_PRIMARY_STYLE = Style(StandardRole.TEXT_PRIMARY)
+        private val ACCENT_STYLE = Style(StandardRole.ACCENT)
+        private val DANGER_STYLE = Style(StandardRole.DANGER)
+        private val DESTROYED_STYLE = Style(BoardRole.DESTROYED, strikethrough = true)
+    }
+}

@@ -3,7 +3,7 @@
 Running the game with no command opens the setup screen:
 
 ```sh
-battletech
+steelrain
 ```
 
 The setup screen defines a match in two stages: first the mode, then the map and each player's
@@ -13,7 +13,7 @@ force.
 
 Only the **[1] MODE** panel is shown at first:
 
-![The setup screen: the BATTLETECH banner above the MODE panel, with hot-seat selected](assets/screenshots/setup-mode.png)
+![The setup screen: the STEELRAIN banner above the MODE panel, with hot-seat selected](assets/screenshots/setup-mode.png)
 
 | Mode | Use it when |
 |---|---|
@@ -52,7 +52,7 @@ armor.
 
 A maximized MAP panel previews the map under the cursor:
 
-![The maximized MAP panel: the map list beside a preview of the battletech-classic map](assets/screenshots/setup-map-preview.png)
+![The maximized MAP panel: the map list beside a preview of the classic map](assets/screenshots/setup-map-preview.png)
 
 Press `c` to start the match. If something is missing, the banner says what (for example
 `select a map` or `player 2 has no units`). Each player needs at least one mech, and a map has

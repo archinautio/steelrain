@@ -1,8 +1,8 @@
 [project]
-site_name = "BattleTech"
-site_description = "Play BattleTech in your terminal: installation, match setup, controls, network play, custom content, and the game rules."
-site_url = "https://archinautio.github.io/battletech/"
-repo_url = "https://github.com/archinautio/battletech"
+site_name = "Steelrain"
+site_description = "Steelrain: armored combat with the BattleTech tabletop rules, in your terminal: installation, match setup, controls, network play, custom content, and the game rules."
+site_url = "https://archinautio.github.io/steelrain/"
+repo_url = "https://github.com/archinautio/steelrain"
 docs_dir = "docs/site"
 site_dir = "build/site"
 strict = true
@@ -34,8 +34,8 @@ nav = [
 
 [project.theme]
 language = "en"
-logo = "assets/battletech-logo.svg"
-favicon = "assets/battletech-logo.svg"
+logo = "assets/steelrain-logo.svg"
+favicon = "assets/steelrain-logo.svg"
 features = ["content.code.copy", "navigation.footer"]
 font = false
 

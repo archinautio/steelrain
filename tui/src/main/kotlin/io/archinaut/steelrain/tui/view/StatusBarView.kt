@@ -1,0 +1,95 @@
+package io.archinaut.steelrain.tui.view
+
+import io.archinaut.steelrain.tactical.model.PlayerId
+import io.archinaut.steelrain.tactical.model.TurnPhase
+import io.archinaut.steelrain.tactical.unit.VisibleUnit
+import io.archinaut.steelrain.tui.game.displayName
+import com.github.ajalt.mordant.rendering.TextAlign
+import io.archinaut.tenter.color.StandardRole
+import io.archinaut.tenter.screen.Canvas
+import io.archinaut.tenter.screen.Constraint.Fill
+import io.archinaut.tenter.screen.Constraint.Length
+import io.archinaut.tenter.screen.Constraint.Min
+import io.archinaut.tenter.screen.Layout
+import io.archinaut.tenter.screen.Padding
+import io.archinaut.tenter.screen.Rect
+import io.archinaut.tenter.screen.Style
+import io.archinaut.tenter.text.CellWidth
+import io.archinaut.tenter.widget.Block
+import io.archinaut.tenter.widget.Paragraph
+import io.archinaut.tenter.widget.Row
+import io.archinaut.tenter.widget.Widget
+
+internal class StatusBarView(
+    private val phase: TurnPhase,
+    private val prompt: String,
+    private val activePlayer: PlayerId? = null,
+    private val actionUnit: VisibleUnit? = null,
+) : Widget {
+
+    override fun render(canvas: Canvas) {
+        val block = Block.bordered(padding = STATUS_BAR_PADDING)
+        block.render(canvas)
+        renderContent(block.inner(canvas))
+    }
+
+    private fun renderContent(canvas: Canvas) {
+        val message = messageText()
+        val compact = paddedContentWidth(message) > canvas.width
+        val separator = if (compact) COMPACT_SEPARATOR else PADDED_SEPARATOR
+        val phaseWidth = if (compact) CellWidth.of(phaseLabel(phase)) else PHASE_WIDTH
+        val playerWidth = if (compact) activePlayer?.let { CellWidth.of(it.displayName) } ?: 0 else PLAYER_WIDTH
+        val player = activePlayer?.let { Paragraph(it.displayName, Style(playerColor(it))) } ?: Paragraph("")
+        val separatorField = Length(CellWidth.of(separator)) to Paragraph(separator, TEXT_PRIMARY_STYLE)
+        val fields = Row(
+            listOf(
+                Length(phaseWidth) to Paragraph(phaseLabel(phase), ACCENT_STYLE, align = TextAlign.CENTER),
+                separatorField,
+                Length(playerWidth) to player,
+                separatorField,
+                Fill(1) to Paragraph(message, TEXT_PRIMARY_STYLE),
+            ),
+        )
+
+        // The fields stop short of the help hint, so an over-long message ellipsizes before it.
+        val (lineArea, _, hintArea) = HINT_ROW.split(Rect(0, 0, canvas.width, 1))
+        val leadingPadding = Padding(left = if (compact) 0 else LEADING_PADDING)
+        fields.render(canvas.region(lineArea.inner(leadingPadding)))
+        HelpHint.render(canvas.region(hintArea))
+    }
+
+    private fun paddedContentWidth(message: String): Int =
+        LEADING_PADDING +
+            PHASE_WIDTH +
+            CellWidth.of(PADDED_SEPARATOR) +
+            PLAYER_WIDTH +
+            CellWidth.of(PADDED_SEPARATOR) +
+            CellWidth.of(message) +
+            MESSAGE_HELP_GAP +
+            HelpHint.WIDTH
+
+    private fun messageText(): String =
+        actionUnit?.let { "${UnitLabel.of(it)}$UNIT_MESSAGE_SEPARATOR$prompt" } ?: prompt
+
+    private companion object {
+        private const val LEADING_PADDING: Int = 2
+        private const val PADDED_SEPARATOR: String = "   |   "
+        private const val COMPACT_SEPARATOR: String = " | "
+        private const val UNIT_MESSAGE_SEPARATOR: String = " ┆ "
+        private const val MESSAGE_HELP_GAP: Int = 1
+        // Min, so the message and the gap give way to the hint before it shrinks.
+        private val HINT_ROW = Layout.horizontal(Fill(1), Length(MESSAGE_HELP_GAP), Min(HelpHint.WIDTH))
+        private val ACCENT_STYLE = Style(StandardRole.ACCENT)
+        private val TEXT_PRIMARY_STYLE = Style(StandardRole.TEXT_PRIMARY)
+        private val PHASE_WIDTH = TurnPhase.entries.maxOf { CellWidth.of(phaseLabel(it)) }
+        private val PLAYER_WIDTH = PlayerId.entries.maxOf { CellWidth.of(it.displayName) }
+
+        /**
+         * The status bar is only [GameScreen.STATUS_BAR_HEIGHT] = 3 rows tall: border alone
+         * takes 2 and the phase, player, prompt, and help hint share the remaining row.
+         */
+        private val STATUS_BAR_PADDING = Padding(left = 1, right = 1)
+
+        private fun phaseLabel(phase: TurnPhase): String = phase.name.replace('_', ' ')
+    }
+}

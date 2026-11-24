@@ -1,10 +1,10 @@
-import io.archinaut.battletech.gradle.JlinkRuntime
-import io.archinaut.battletech.gradle.LauncherSmokeTest
+import io.archinaut.steelrain.gradle.JlinkRuntime
+import io.archinaut.steelrain.gradle.LauncherSmokeTest
 import org.gradle.language.jvm.tasks.ProcessResources
 
 plugins {
-    id("battletech.kotlin-application")
-    id("battletech.kotlin-serialization")
+    id("steelrain.kotlin-application")
+    id("steelrain.kotlin-serialization")
     alias(libs.plugins.shadow)
 }
 
@@ -13,7 +13,7 @@ plugins {
 val nativeAccess = "ALL-UNNAMED"
 
 application {
-    mainClass.set("io.archinaut.battletech.tui.MainKt")
+    mainClass.set("io.archinaut.steelrain.tui.MainKt")
     applicationDefaultJvmArgs = listOf("--enable-native-access=$nativeAccess")
 }
 
@@ -61,7 +61,7 @@ tasks.shadowJar {
     // META-INF/LICENSE cannot win the duplicate exclusion above.
     from(rootProject.layout.projectDirectory.file("LICENSE")) {
         into("META-INF")
-        rename { "LICENSE-battletech" }
+        rename { "LICENSE-steelrain" }
     }
     manifest {
         attributes(
@@ -79,9 +79,9 @@ val releaseVersion = project.version.toString()
 
 val releaseJar = tasks.register<Copy>("releaseJar") {
     group = "distribution"
-    description = "Copies the shadow jar to build/release as battletech-<version>.jar."
+    description = "Copies the shadow jar to build/release as steelrain-<version>.jar."
     from(tasks.shadowJar)
-    rename(".*", "battletech-$releaseVersion.jar")
+    rename(".*", "steelrain-$releaseVersion.jar")
     into(releaseDirectory)
 }
 
@@ -101,7 +101,7 @@ val platform = run {
     }
     "$os-$arch"
 }
-val bundleName = "battletech-$releaseVersion-$platform"
+val bundleName = "steelrain-$releaseVersion-$platform"
 
 val jlinkRuntime = tasks.register<JlinkRuntime>("jlinkRuntime") {
     description = "Builds a trimmed Java runtime with the modules the shadow jar uses."
@@ -111,13 +111,13 @@ val jlinkRuntime = tasks.register<JlinkRuntime>("jlinkRuntime") {
 }
 
 val stageBundle = tasks.register<Sync>("stageBundle") {
-    description = "Lays out the bundle: launcher, battletech.jar and runtime/."
+    description = "Lays out the bundle: launcher, steelrain.jar and runtime/."
     into(layout.buildDirectory.dir("bundle/$bundleName"))
     from(jlinkRuntime) { into("runtime") }
-    from(tasks.shadowJar) { rename { "battletech.jar" } }
+    from(tasks.shadowJar) { rename { "steelrain.jar" } }
     from(rootProject.layout.projectDirectory.file("LICENSE"))
     from("bundle") {
-        include(if (isWindows) "battletech.bat" else "battletech")
+        include(if (isWindows) "steelrain.bat" else "steelrain")
         filePermissions { unix("rwxr-xr-x") }
     }
 }

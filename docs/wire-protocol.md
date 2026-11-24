@@ -16,7 +16,7 @@ packages — not just adding/removing one — would silently change the wire for
 round-trip tests can't catch that on their own, since they encode and decode with the same code
 on both sides of the assertion.
 
-Every `@Serializable sealed` hierarchy that's reachable under `io.archinaut.battletech.` therefore carries
+Every `@Serializable sealed` hierarchy that's reachable under `io.archinaut.steelrain.` therefore carries
 `@SerialName` on every concrete variant, by one convention: **the serial name is the variant's
 lexical nesting path relative to its package, decapitalized segment by segment and joined with
 `.`, dropping only as many leading segments as needed for the name to stay unique among its
@@ -29,10 +29,10 @@ that implements a bare marker root from a separate file (`CombatUnit`/`ForeignUn
 `VisibleUnit`) uses its own name unprefixed, the same as any other single-segment case.
 
 This is build-enforced, not hand-maintained discipline, by two tests in
-`network/src/test/kotlin/io/archinaut/battletech/network/wire/`:
+`network/src/test/kotlin/io/archinaut/steelrain/network/wire/`:
 
 - `WireDiscriminatorConventionTest` discovers every top-level `@Serializable sealed`
-  interface/class under `io.archinaut.battletech.` via Konsist, walks each down to its concrete leaves via
+  interface/class under `io.archinaut.steelrain.` via Konsist, walks each down to its concrete leaves via
   `KClass.sealedSubclasses`, and asserts every leaf's `@SerialName` is present, is a decapitalized
   suffix of that leaf's own lexical nesting path (never an arbitrary invented string), and is
   unique among its root's other variants.
@@ -61,7 +61,7 @@ merges every seat's bundle in join order (first-registrant wins); the decoder no
 bootstrap's `registry` field (not `mechModels`) to build its resolver. A collision is reported as an
 `AssetConflict` event through the normal (shared) game log rather than a client-local check — the
 client no longer inspects host content against its own catalog at all.
-`network/src/test/kotlin/io/archinaut/battletech/network/wire/WireFormatRoundTripTest.kt` additionally pins the
+`network/src/test/kotlin/io/archinaut/steelrain/network/wire/WireFormatRoundTripTest.kt` additionally pins the
 literal JSON for one flat (`RuleRejection.NoAmmo`) and one nested (`GameEvent`'s
 `UnitStoodUp.Undisclosed`) variant, to catch a discriminator change that round-tripping alone would
 miss (encoding and decoding with the same code on both sides of an assertion agrees with itself
@@ -91,14 +91,14 @@ reaches a `LobbyHost` rather than a `GameServer` — the lobby forwards it to th
 untouched. An interactive host's acceptor is built over the lobby and never rebuilt, so this is
 the path every mid-match reconnect takes.
 
-`LobbyJoined.registry` is an `io.archinaut.battletech.tactical.model.content.AssetRegistry` — the merged registry
+`LobbyJoined.registry` is an `io.archinaut.steelrain.tactical.model.content.AssetRegistry` — the merged registry
 as of park time (full `GameMap`/`MechModel` content, not just ids), including the joiner's own
 `--add-map`/`--add-mech` contribution, so the joiner's read-only mirror screen can render map
 previews and mech record sheets exactly as the host does rather than bare id lists. It is the same
 complete content `MatchBootstrap.registry` carries again at commit — sent twice deliberately: the
 lobby registry is a pre-commit value the mirror renders from immediately, while `MatchBootstrap`
 must stay self-contained for the join-after-commit branch above, which never sees a `LobbyJoined`
-at all. `LobbySelections.plan` is an `io.archinaut.battletech.tactical.model.content.MatchPlan` (map name + per-player roster counts), sent once per host
+at all. `LobbySelections.plan` is an `io.archinaut.steelrain.tactical.model.content.MatchPlan` (map name + per-player roster counts), sent once per host
 change with no debounce — the parked client always mirrors whatever the host's setup screen shows
 right now, never a stale intermediate. `LobbyCommitted` carries no payload; it is the signal to
 re-send the exact same `ClientMessage.Join` object already sent once.

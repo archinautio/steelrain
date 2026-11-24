@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-# Battletech TUI - Terrain Icon Preview Script
+# Steelrain - Terrain Icon Preview Script
 # Updated for ZSH with native Unicode support and high-plane glyphs.
 # REQUIRES: A terminal with a Nerd Font installed and TrueColor support.
 
@@ -121,7 +121,7 @@ TERRAINS=(
 
 )
 
-echo -e "${BOLD}Battletech TUI: Terrain Glyph Preview (ZSH Native)${RESET}"
+echo -e "${BOLD}Steelrain: Terrain Glyph Preview (ZSH Native)${RESET}"
 echo "------------------------------------------------------------------------------------------"
 printf "%-20s | %-37s | %-7s | %-5s | %-10s\n" "Terrain" "Nerd Font" "Hex" "Icon" "CLI Test"
 echo "------------------------------------------------------------------------------------------"

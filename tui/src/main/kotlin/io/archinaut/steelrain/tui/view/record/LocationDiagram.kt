@@ -1,0 +1,510 @@
+package io.archinaut.steelrain.tui.view.record
+
+import io.archinaut.steelrain.tui.view.SectionHeading
+import io.archinaut.steelrain.tactical.model.MechLocation
+import io.archinaut.steelrain.tactical.unit.CombatUnit
+import io.archinaut.steelrain.tactical.unit.VisibleUnit
+import io.archinaut.tenter.screen.Canvas
+import io.archinaut.tenter.screen.Style
+import io.archinaut.tenter.text.CellWidth
+import io.archinaut.tenter.screen.Rect
+import io.archinaut.tenter.widget.MeasurableWidget
+import io.archinaut.tenter.widget.RowWriter
+import io.archinaut.tenter.widget.Widget
+
+/**
+ * The record sheet's front-facing paper doll. [armor] and [internalStructure] share one
+ * configurable robot renderer; armor embeds rear-torso tracks, internal structure never does.
+ * That split is [Body]'s two variants, not a runtime check — an internal-structure diagram simply
+ * has nowhere to put rear locations, so passing them is a compile error rather than a caught
+ * `require()`.
+ *
+ * A filled pip is damage taken (`max - remaining`), matching the pilot-hit and critical-slot
+ * convention elsewhere on the sheet. Empty pips are points still available.
+ */
+internal class LocationDiagram private constructor(
+    private val title: String,
+    private val body: Body,
+) : MeasurableWidget {
+
+    override fun write(writer: RowWriter) {
+        writer.draw(painting, naturalHeight())
+    }
+
+    /** One body section: armor/structure [remaining] out of [max], and destruction state. */
+    internal data class Location(
+        internal val remaining: Int,
+        internal val max: Int,
+        internal val destroyed: Boolean = false,
+    ) {
+        /** The outline and label style: dimmed once the location is destroyed. */
+        internal val style: Style get() = if (destroyed) SheetStyles.DESTROYED else SheetStyles.TEXT_PRIMARY
+    }
+
+    /**
+     * The eight always-present locations, plus — only for [FrontAndRear] — the three rear torso
+     * tracks the armor diagram embeds. [sizes] is fixed per variant: there is exactly one set of
+     * proportions for "structure with rear tracks" (the armor sheet) and one for "structure alone"
+     * (the internal structure sheet), so it travels with the variant rather than being threaded in
+     * separately by a caller who could get the two out of sync.
+     */
+    private sealed class Body {
+        abstract val sizes: DiagramSizes
+        abstract val head: Location
+        abstract val leftArm: Location
+        abstract val rightArm: Location
+        abstract val leftTorso: Location
+        abstract val rightTorso: Location
+        abstract val centerTorso: Location
+        abstract val leftLeg: Location
+        abstract val rightLeg: Location
+
+        data class Front(
+            override val head: Location,
+            override val leftArm: Location,
+            override val rightArm: Location,
+            override val leftTorso: Location,
+            override val rightTorso: Location,
+            override val centerTorso: Location,
+            override val leftLeg: Location,
+            override val rightLeg: Location,
+        ) : Body() {
+            override val sizes: DiagramSizes get() = INTERNAL_STRUCTURE_SIZES
+        }
+
+        data class FrontAndRear(
+            override val head: Location,
+            override val leftArm: Location,
+            override val rightArm: Location,
+            override val leftTorso: Location,
+            override val rightTorso: Location,
+            override val centerTorso: Location,
+            override val leftLeg: Location,
+            override val rightLeg: Location,
+            val leftTorsoRear: Location,
+            val centerTorsoRear: Location,
+            val rightTorsoRear: Location,
+        ) : Body() {
+            override val sizes: DiagramSizes get() = ARMOR_SIZES
+
+            /** Fixed width of the rear side-torso boxes — same for every armor diagram. */
+            val rearSideTorsoWidth: Int get() = 4
+        }
+    }
+
+    /** The diagram painted at fixed coordinates, centered in whatever width it is given. */
+    private val painting: Widget = object : Widget {
+        override fun render(canvas: Canvas) {
+            SectionHeading(title).render(canvas.region(Rect(0, 0, canvas.width, 1)))
+            drawRobot(canvas, body.sizes)
+        }
+    }
+
+    private fun drawRobot(canvas: Canvas, sizes: DiagramSizes) {
+        val geometry = geometryFor(sizes, centerX = canvas.width / 2)
+        val rear = body as? Body.FrontAndRear
+
+        drawCentered(
+            canvas,
+            geometry.headX,
+            sizes.head + 2,
+            y = 1,
+            text = "Head " + value(body.head),
+            style = body.head.style,
+        )
+        val headTop = 2
+        val headRows = rowsFor(body.head.max, sizes.head)
+        PipBoxView(body.head, sizes.head, headRows).render(canvas.region(Rect(geometry.headX, headTop, sizes.head + 2, headRows + 2)))
+        val headBottom = headTop + headRows + 1
+        drawSideLabels(canvas, geometry, sizes, headTop + 1)
+        val torsoTop = headBottom + 3
+        drawTorsoLabels(canvas, geometry, sizes, torsoTop)
+
+        val leftFrontRows = rowsFor(body.leftTorso.max, sizes.sideTorso)
+        val rightFrontRows = rowsFor(body.rightTorso.max, sizes.sideTorso)
+        val centerFrontRows = maxOf(
+            rowsFor(body.centerTorso.max, sizes.centerTorso),
+            leftFrontRows,
+            rightFrontRows,
+        )
+        val leftRear = rear?.let { RearTrack(it.leftTorsoRear, it.rearSideTorsoWidth, rowsFor(it.leftTorsoRear.max, it.rearSideTorsoWidth)) }
+        val rightRear = rear?.let { RearTrack(it.rightTorsoRear, it.rearSideTorsoWidth, rowsFor(it.rightTorsoRear.max, it.rearSideTorsoWidth)) }
+        val centerRear = rear?.let {
+            val centerRows = rowsFor(it.centerTorsoRear.max, sizes.centerTorso)
+            RearTrack(
+                it.centerTorsoRear,
+                sizes.centerTorso,
+                maxOf(centerRows, requireNotNull(leftRear).rows, requireNotNull(rightRear).rows),
+            )
+        }
+        val leftTorsoBottom = drawTorso(
+            canvas,
+            front = body.leftTorso,
+            rear = leftRear,
+            side = BodySide.LEFT,
+            x = geometry.leftTorsoX,
+            topY = torsoTop,
+            frontWidth = sizes.sideTorso,
+            frontRows = leftFrontRows,
+        )
+        val centerTorsoBottom = drawTorso(
+            canvas,
+            front = body.centerTorso,
+            rear = centerRear,
+            side = BodySide.CENTER,
+            x = geometry.centerTorsoX,
+            topY = torsoTop,
+            frontWidth = sizes.centerTorso,
+            frontRows = centerFrontRows,
+        )
+        val rightTorsoBottom = drawTorso(
+            canvas,
+            front = body.rightTorso,
+            rear = rightRear,
+            side = BodySide.RIGHT,
+            x = geometry.rightTorsoX,
+            topY = torsoTop,
+            frontWidth = sizes.sideTorso,
+            frontRows = rightFrontRows,
+        )
+
+        val armTop = torsoTop + 2
+        drawArm(canvas, body.leftArm, BodySide.LEFT, geometry.leftArmX, armTop, sizes.arm)
+        drawArm(canvas, body.rightArm, BodySide.RIGHT, geometry.rightArmX, armTop, sizes.arm)
+        val torsoBottom = maxOf(leftTorsoBottom, centerTorsoBottom, rightTorsoBottom)
+        val legTop = torsoBottom + 2
+        val leftLegWidth = legWidth(body.leftLeg.max, sizes)
+        val rightLegWidth = legWidth(body.rightLeg.max, sizes)
+        val leftLegX = geometry.leftLegInnerEdgeX - leftLegWidth - 1
+        drawLeg(canvas, body.leftLeg, BodySide.LEFT, leftLegX, legTop, leftLegWidth)
+        drawLeg(canvas, body.rightLeg, BodySide.RIGHT, geometry.rightLegInnerEdgeX, legTop, rightLegWidth)
+    }
+
+    /** Computes the occupied rows from the same geometry inputs used by [drawRobot]. */
+    private fun naturalHeight(): Int {
+        val sizes = body.sizes
+        val headBottom = 2 + rowsFor(body.head.max, sizes.head) + 1
+        val torsoTop = headBottom + 3
+        val rear = body as? Body.FrontAndRear
+        fun rearRows(location: Location, width: Int): Int = rowsFor(location.max, width)
+        fun torsoBottom(front: Location, rearLocation: Location?, width: Int, rearWidth: Int): Int =
+            if (rearLocation == null) {
+                torsoTop + rowsFor(front.max, width) + 1
+            } else {
+                torsoTop + rowsFor(front.max, width) + rearRows(rearLocation, rearWidth) + 3
+            }
+
+        val leftRear = rear?.let { it.leftTorsoRear to it.rearSideTorsoWidth }
+        val rightRear = rear?.let { it.rightTorsoRear to it.rearSideTorsoWidth }
+        val centerRearRows = rear?.let {
+            maxOf(
+                rowsFor(it.centerTorsoRear.max, sizes.centerTorso),
+                leftRear?.let { (location, width) -> rowsFor(location.max, width) } ?: 0,
+                rightRear?.let { (location, width) -> rowsFor(location.max, width) } ?: 0,
+            )
+        }
+        val torsoBottom = maxOf(
+            torsoBottom(body.leftTorso, leftRear?.first, sizes.sideTorso, leftRear?.second ?: 0),
+            torsoBottom(
+                body.centerTorso,
+                rear?.centerTorsoRear,
+                sizes.centerTorso,
+                centerRearRows ?: 0,
+            ),
+            torsoBottom(body.rightTorso, rightRear?.first, sizes.sideTorso, rightRear?.second ?: 0),
+        )
+        val armTop = torsoTop + 2
+        val armEnd = maxOf(
+            armTop + rowsFor(body.leftArm.max, sizes.arm) + 4,
+            armTop + rowsFor(body.rightArm.max, sizes.arm) + 4,
+        )
+        val legTop = torsoBottom + 2
+        fun legEnd(location: Location): Int {
+            val width = legWidth(location.max, sizes)
+            val rows = rowsFor(location.max, width)
+            return maxOf(legTop + rows + 3, legTop + maxOf(2, rows / 2) + 2)
+        }
+        // The diagram intentionally leaves the two rows consumed by the following sheet gutter
+        // to the parent Stack; keeping them out of this child preserves the printed sheet grid.
+        return (maxOf(armEnd, legEnd(body.leftLeg), legEnd(body.rightLeg)) - 2).coerceAtLeast(0)
+    }
+
+    private fun drawSideLabels(
+        canvas: Canvas,
+        geometry: DiagramGeometry,
+        sizes: DiagramSizes,
+        y: Int,
+    ) {
+        canvas.setString(
+            geometry.headX - HEAD_SIDE_LABEL_GAP - CellWidth.of(LEFT_SIDE_LABEL),
+            y,
+            LEFT_SIDE_LABEL,
+            body.leftTorso.style,
+        )
+        canvas.setString(
+            geometry.headX + sizes.head + HEAD_SIDE_LABEL_GAP + 2,
+            y,
+            RIGHT_SIDE_LABEL,
+            body.rightTorso.style,
+        )
+    }
+
+    private fun drawTorsoLabels(
+        canvas: Canvas,
+        geometry: DiagramGeometry,
+        sizes: DiagramSizes,
+        torsoTop: Int,
+    ) {
+        drawCentered(
+            canvas,
+            geometry.centerTorsoX,
+            sizes.centerTorso + 2,
+            torsoTop - 2,
+            "Torso",
+            body.centerTorso.style,
+        )
+        canvas.setString(
+            geometry.leftTorsoX + 1,
+            torsoTop - 1,
+            value(body.leftTorso),
+            body.leftTorso.style,
+        )
+        drawCentered(
+            canvas,
+            geometry.centerTorsoX,
+            sizes.centerTorso + 2,
+            torsoTop - 1,
+            value(body.centerTorso),
+            body.centerTorso.style,
+        )
+        drawRightAligned(
+            canvas,
+            geometry.rightTorsoX,
+            sizes.sideTorso + 2,
+            torsoTop - 1,
+            value(body.rightTorso),
+            body.rightTorso.style,
+            rightPadding = 1,
+        )
+    }
+
+    private fun drawTorso(
+        canvas: Canvas,
+        front: Location,
+        rear: RearTrack?,
+        side: BodySide,
+        x: Int,
+        topY: Int,
+        frontWidth: Int,
+        frontRows: Int,
+    ): Int {
+        if (rear == null) {
+            PipBoxView(front, frontWidth, frontRows).render(canvas.region(Rect(x, topY, frontWidth + 2, frontRows + 2)))
+            return topY + frontRows + 1
+        }
+
+        TorsoWithRearView(front, frontWidth, frontRows, rear.location, rear.width, rear.rows, side)
+            .render(canvas.region(Rect(x, topY, frontWidth + 2, frontRows + rear.rows + 5)))
+        return topY + frontRows + rear.rows + 3
+    }
+
+    private fun drawArm(
+        canvas: Canvas,
+        location: Location,
+        side: BodySide,
+        x: Int,
+        topY: Int,
+        width: Int,
+    ) {
+        val rows = rowsFor(location.max, width)
+        ArmView(location, side, width, rows).render(canvas.region(Rect(x, topY, width + 2, rows + 4)))
+        drawLimbCaption(canvas, location, side, x, width, topY + maxOf(2, rows / 2), "Arm")
+    }
+
+    private fun drawLeg(
+        canvas: Canvas,
+        location: Location,
+        side: BodySide,
+        x: Int,
+        topY: Int,
+        width: Int,
+    ) {
+        val rows = rowsFor(location.max, width)
+        val left = x - LegView.boxOffset(side)
+        LegView(location, side, width, rows).render(canvas.region(Rect(left, topY, width + 4, rows + 3)))
+        drawLimbCaption(canvas, location, side, x, width, topY + maxOf(2, rows / 2), "Leg")
+    }
+
+    private fun drawLimbCaption(
+        canvas: Canvas,
+        location: Location,
+        side: BodySide,
+        x: Int,
+        width: Int,
+        y: Int,
+        label: String,
+    ) {
+        val style = location.style
+        when (side) {
+            BodySide.LEFT -> {
+                canvas.setString(x - CellWidth.of(label) - 1, y, label, style)
+                canvas.setString(x - CellWidth.of(value(location)) - 1, y + 1, value(location), style)
+            }
+            BodySide.RIGHT -> {
+                canvas.setString(x + width + 3, y, label, style)
+                canvas.setString(x + width + 3, y + 1, value(location), style)
+            }
+            BodySide.CENTER -> error("a limb must be left or right")
+        }
+    }
+
+    private fun drawCentered(
+        canvas: Canvas,
+        x: Int,
+        width: Int,
+        y: Int,
+        text: String,
+        style: Style,
+    ) {
+        canvas.setString(x + (width - CellWidth.of(text)) / 2, y, text, style)
+    }
+
+    private fun drawRightAligned(
+        canvas: Canvas,
+        x: Int,
+        width: Int,
+        y: Int,
+        text: String,
+        style: Style,
+        rightPadding: Int = 0,
+    ) {
+        canvas.setString(x + width - CellWidth.of(text) - rightPadding, y, text, style)
+    }
+
+    private fun rowsFor(capacity: Int, width: Int): Int =
+        (capacity.coerceAtLeast(0) + width - 1) / width
+
+    private fun legWidth(max: Int, sizes: DiagramSizes): Int =
+        sizes.fixedLeg ?: when {
+            max <= 16 -> 3
+            max >= 24 -> 5
+            else -> 4
+        }
+
+    private fun value(location: Location): String = location.remaining.toString() + "/" + location.max
+
+    private data class DiagramSizes(
+        val head: Int,
+        val sideTorso: Int,
+        val centerTorso: Int,
+        val arm: Int,
+        val fixedLeg: Int?,
+    )
+
+    private data class DiagramGeometry(
+        val headX: Int,
+        val leftTorsoX: Int,
+        val centerTorsoX: Int,
+        val rightTorsoX: Int,
+        val leftArmX: Int,
+        val rightArmX: Int,
+        val leftLegInnerEdgeX: Int,
+        val rightLegInnerEdgeX: Int,
+    )
+
+    private data class RearTrack(
+        val location: Location,
+        val width: Int,
+        val rows: Int,
+    )
+
+    private fun geometryFor(sizes: DiagramSizes, centerX: Int): DiagramGeometry {
+        val centerTorsoX = centerX - (sizes.centerTorso + 2) / 2
+        val leftTorsoX = centerTorsoX - sizes.sideTorso - 2
+        val rightTorsoX = centerTorsoX + sizes.centerTorso + 2
+        val headX = centerX - (sizes.head + 2) / 2
+        val leftArmX = leftTorsoX - ARM_TORSO_GAP - sizes.arm - 2
+        val rightArmX = rightTorsoX + sizes.sideTorso + 2 + ARM_TORSO_GAP
+        val leftLegInnerEdgeX = centerX - LEG_INNER_GAP / 2 - 1
+        val rightLegInnerEdgeX = centerX + LEG_INNER_GAP / 2 + 1
+        return DiagramGeometry(
+            headX = headX,
+            leftTorsoX = leftTorsoX,
+            centerTorsoX = centerTorsoX,
+            rightTorsoX = rightTorsoX,
+            leftArmX = leftArmX,
+            rightArmX = rightArmX,
+            leftLegInnerEdgeX = leftLegInnerEdgeX,
+            rightLegInnerEdgeX = rightLegInnerEdgeX,
+        )
+    }
+
+    internal companion object {
+        private const val HEAD_SIDE_LABEL_GAP = 10
+        private const val LEFT_SIDE_LABEL = "Left"
+        private const val RIGHT_SIDE_LABEL = "Right"
+        private const val ARM_TORSO_GAP = 1
+        private const val LEG_INNER_GAP = 5
+
+        private val ARMOR_SIZES = DiagramSizes(
+            head = 5,
+            sideTorso = 6,
+            centerTorso = 9,
+            arm = 4,
+            fixedLeg = null,
+        )
+        private val INTERNAL_STRUCTURE_SIZES = DiagramSizes(
+            head = 3,
+            sideTorso = 4,
+            centerTorso = 5,
+            arm = 3,
+            fixedLeg = 4,
+        )
+
+        /** The ARMOR DIAGRAM card. Works for any [VisibleUnit] — armor and its maximum are public. */
+        internal fun armor(unit: VisibleUnit, destroyed: (MechLocation) -> Boolean): LocationDiagram {
+            val armor = unit.armor
+            val max = unit.maxArmor
+            fun at(remaining: Int, atMax: Int, location: MechLocation) = Location(remaining, atMax, destroyed(location))
+            return LocationDiagram(
+                title = "ARMOR DIAGRAM",
+                body = Body.FrontAndRear(
+                    head = at(armor.head, max.head, MechLocation.HEAD),
+                    leftArm = at(armor.leftArm, max.leftArm, MechLocation.LEFT_ARM),
+                    rightArm = at(armor.rightArm, max.rightArm, MechLocation.RIGHT_ARM),
+                    leftTorso = at(armor.leftTorso, max.leftTorso, MechLocation.LEFT_TORSO),
+                    rightTorso = at(armor.rightTorso, max.rightTorso, MechLocation.RIGHT_TORSO),
+                    centerTorso = at(armor.centerTorso, max.centerTorso, MechLocation.CENTER_TORSO),
+                    leftLeg = at(armor.leftLeg, max.leftLeg, MechLocation.LEFT_LEG),
+                    rightLeg = at(armor.rightLeg, max.rightLeg, MechLocation.RIGHT_LEG),
+                    leftTorsoRear = at(armor.leftTorsoRear, max.leftTorsoRear, MechLocation.LEFT_TORSO),
+                    centerTorsoRear = at(armor.centerTorsoRear, max.centerTorsoRear, MechLocation.CENTER_TORSO),
+                    rightTorsoRear = at(armor.rightTorsoRear, max.rightTorsoRear, MechLocation.RIGHT_TORSO),
+                ),
+            )
+        }
+
+        /**
+         * The INTERNAL STRUCTURE DIAGRAM card. Owner-only: [CombatUnit.internalStructure] and its
+         * maximum are private record-sheet data, never exposed on the public [VisibleUnit] surface.
+         */
+        internal fun internalStructure(unit: CombatUnit): LocationDiagram {
+            val current = unit.internalStructure
+            val max = unit.maxInternalStructure
+            fun at(remaining: Int, atMax: Int, location: MechLocation) = Location(remaining, atMax, !current.isIntact(location))
+            return LocationDiagram(
+                title = "INTERNAL STRUCTURE DIAGRAM",
+                body = Body.Front(
+                    head = at(current.head, max.head, MechLocation.HEAD),
+                    leftArm = at(current.leftArm, max.leftArm, MechLocation.LEFT_ARM),
+                    rightArm = at(current.rightArm, max.rightArm, MechLocation.RIGHT_ARM),
+                    leftTorso = at(current.leftTorso, max.leftTorso, MechLocation.LEFT_TORSO),
+                    rightTorso = at(current.rightTorso, max.rightTorso, MechLocation.RIGHT_TORSO),
+                    centerTorso = at(current.centerTorso, max.centerTorso, MechLocation.CENTER_TORSO),
+                    leftLeg = at(current.leftLeg, max.leftLeg, MechLocation.LEFT_LEG),
+                    rightLeg = at(current.rightLeg, max.rightLeg, MechLocation.RIGHT_LEG),
+                ),
+            )
+        }
+    }
+}

@@ -6,13 +6,13 @@ how root content resources and the shadow jar get packaged, or how a release is 
 
 ## buildSrc convention plugins
 
-Applied via `id("battletech.<name>")`. `buildSrc` also holds two task types used by release
-packaging, in `io.archinaut.battletech.gradle` (see [Release packaging](#release-packaging)):
+Applied via `id("steelrain.<name>")`. `buildSrc` also holds two task types used by release
+packaging, in `io.archinaut.steelrain.gradle` (see [Release packaging](#release-packaging)):
 
-- **`battletech.kotlin-common`** — base for every module: applies `kotlin("jvm")`, sets the JVM toolchain (JVM 21 when `CLAUDE_CODE` env var is set — Claude Cloud constraint — otherwise the catalog version), enables `explicitApi()`, configures JUnit Platform + test logging, wires standard test deps (JUnit BOM/bundle, MockK, AssertJ).
-- **`battletech.kotlin-library`** — applies `kotlin-common`; used by `strategic`, `tactical`, and `network`.
-- **`battletech.kotlin-application`** — applies `kotlin-common` + the `application` plugin; used by `bt` and `tui`.
-- **`battletech.kotlin-serialization`** — applies the Kotlin serialization plugin; used by `tactical` and `network` (both need kotlinx-serialization for `GameState`/wire types).
+- **`steelrain.kotlin-common`** — base for every module: applies `kotlin("jvm")`, sets the JVM toolchain (JVM 21 when `CLAUDE_CODE` env var is set — Claude Cloud constraint — otherwise the catalog version), enables `explicitApi()`, configures JUnit Platform + test logging, wires standard test deps (JUnit BOM/bundle, MockK, AssertJ).
+- **`steelrain.kotlin-library`** — applies `kotlin-common`; used by `strategic`, `tactical`, and `network`.
+- **`steelrain.kotlin-application`** — applies `kotlin-common` + the `application` plugin; used by `bt` and `tui`.
+- **`steelrain.kotlin-serialization`** — applies the Kotlin serialization plugin; used by `tactical` and `network` (both need kotlinx-serialization for `GameState`/wire types).
 
 ## Module dependency edges
 
@@ -41,7 +41,7 @@ The `createExecutable` task (group `distribution`) depends on `shadowJar` and pr
 
 The version lives in the root `gradle.properties` (`version=X.Y.Z-SNAPSHOT`) and applies to every
 module. The shadow jar's manifest carries it as `Implementation-Version`, which `--version`
-prints (`Cli.kt`'s `BATTLETECH_VERSION`; `development` when running from classes).
+prints (`Cli.kt`'s `STEELRAIN_VERSION`; `development` when running from classes).
 
 The root `build.gradle.kts` applies `net.researchgate.release`, configured like Tenter's. On a clean
 `main`, `./gradlew release` asks for the release version (default: the SNAPSHOT without its
@@ -63,18 +63,18 @@ Pushing the tag runs `.github/workflows/release.yml`:
 
 All release files land in `tui/build/release/`:
 
-- **`:tui:releaseJar`** copies the shadow jar as `battletech-<version>.jar`, for players who
+- **`:tui:releaseJar`** copies the shadow jar as `steelrain-<version>.jar`, for players who
   already have Java 25.
-- **`:tui:bundle`** packs `battletech-<version>-<os>-<arch>` (`.tar.gz`, or `.zip` on Windows) with
+- **`:tui:bundle`** packs `steelrain-<version>-<os>-<arch>` (`.tar.gz`, or `.zip` on Windows) with
   its own Java runtime. `<os>` is `macos`, `linux` or `windows`; `<arch>` is `aarch64` or `x64`, both
   taken from the JVM Gradle runs on. Its tasks:
   - `jlinkRuntime` (`buildSrc`'s `JlinkRuntime`) runs the toolchain JDK's `jdeps
     --print-module-deps` on the shadow jar and `jlink`s exactly those modules into
     `build/jlink/runtime`. A module reached only through reflection or a service loader is
     invisible to `jdeps`; add it to the task's `extraModules`.
-  - `stageBundle` lays out `build/bundle/<name>/`: `battletech.jar`, `runtime/`, `LICENSE`, and the launcher
-    from `tui/bundle/` (`battletech` for POSIX shells, `battletech.bat` on Windows). The launcher
-    runs `runtime/bin/java -jar battletech.jar`; native access comes from the jar's manifest.
+  - `stageBundle` lays out `build/bundle/<name>/`: `steelrain.jar`, `runtime/`, `LICENSE`, and the launcher
+    from `tui/bundle/` (`steelrain` for POSIX shells, `steelrain.bat` on Windows). The launcher
+    runs `runtime/bin/java -jar steelrain.jar`; native access comes from the jar's manifest.
   - `bundleSmokeTest` (`buildSrc`'s `LauncherSmokeTest`) runs the staged launcher with
     `--version` and every `--list-*` flag, so a runtime missing a module fails the release
     before anything is uploaded. It cannot reach the interactive screen, which needs a TTY.

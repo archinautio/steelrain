@@ -88,4 +88,4 @@ it to GitHub Pages from `main` only.
   domain, deployment token or generated branch is needed.
 
 Before publishing a larger change, check desktop and narrow layouts, search, and a directly opened
-nested page under the `/battletech/` prefix.
+nested page under the `/steelrain/` prefix.

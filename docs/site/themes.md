@@ -13,7 +13,7 @@ Without `--theme`, the game picks the dark theme that matches your terminal's co
 cannot detect a light terminal background, so choose a light theme yourself:
 
 ```sh
-battletech --theme light
+steelrain --theme light
 ```
 
 `--theme` must come before the command name, for example `--theme light-256 hot-seat`.
@@ -29,7 +29,7 @@ themes use your terminal's own palette, so their exact look depends on your term
 `--theme` also accepts the path of a theme file:
 
 ```sh
-battletech --theme ./my-theme.json
+steelrain --theme ./my-theme.json
 ```
 
 If the path exists, the game uses that file and reports any error in it; otherwise the value is
@@ -37,7 +37,7 @@ taken as a built-in theme name. `--list-themes` lists the built-in themes, plus 
 with `--theme`.
 
 The easiest start is a copy of a built-in theme from the
-[`theme/` directory](https://github.com/archinautio/battletech/tree/main/theme) of the repository.
+[`theme/` directory](https://github.com/archinautio/steelrain/tree/main/theme) of the repository.
 
 ### File format
 

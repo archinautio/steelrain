@@ -1,9 +1,9 @@
 plugins {
-    id("battletech.kotlin-application")
+    id("steelrain.kotlin-application")
 }
 
 application {
-    mainClass.set("io.archinaut.battletech.MainKt")
+    mainClass.set("io.archinaut.steelrain.MainKt")
 }
 
 dependencies {

@@ -99,10 +99,10 @@ jobs:
             echo
             echo "### Downloads"
             echo
-            echo "- **battletech-<version>-<os>-<arch>**: includes its own Java. Unpack it and run \`battletech\` (\`battletech.bat\` on Windows)."
-            echo "- **battletech-<version>.jar**: needs Java 25 or later. Run \`java -jar battletech-<version>.jar\`."
+            echo "- **steelrain-<version>-<os>-<arch>**: includes its own Java. Unpack it and run \`steelrain\` (\`steelrain.bat\` on Windows)."
+            echo "- **steelrain-<version>.jar**: needs Java 25 or later. Run \`java -jar steelrain-<version>.jar\`."
             echo
-            echo "See [Getting started](https://archinautio.github.io/battletech/) for details."
+            echo "See [Getting started](https://archinautio.github.io/steelrain/) for details."
             if [ -n "$PREVIOUS" ]; then
               echo
               echo "**Full changelog**: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/$PREVIOUS...$GITHUB_REF_NAME"
@@ -114,6 +114,6 @@ jobs:
         run: |
           gh release create "$GITHUB_REF_NAME" \
             --verify-tag \
-            --title "BattleTech ${GITHUB_REF_NAME#v}" \
+            --title "Steelrain ${GITHUB_REF_NAME#v}" \
             --notes-file build/release-notes.md \
             build/release/*

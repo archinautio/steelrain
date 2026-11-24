@@ -1,0 +1,44 @@
+package io.archinaut.steelrain.tui.view.record
+
+import io.archinaut.steelrain.tui.view.SectionHeading
+import io.archinaut.tenter.widget.MeasurableWidget
+import io.archinaut.steelrain.tactical.attack.consciousnessTarget
+import io.archinaut.steelrain.tactical.unit.CombatUnit
+import io.archinaut.steelrain.tactical.unit.PILOT_DEATH_THRESHOLD
+import io.archinaut.steelrain.tui.view.PilotHitsTrack
+import io.archinaut.tenter.widget.RowWriter
+
+/**
+ * The WARRIOR DATA card: gunnery/piloting skill, the 6-box Hits Taken track, and the
+ * Consciousness# row printed beneath it on the paper sheet — the 2d6 target for each hit count,
+ * read from [consciousnessTarget] rather than restated here.
+ */
+internal class WarriorDataCard(private val unit: CombatUnit) : MeasurableWidget {
+
+    override fun write(writer: RowWriter) {
+        writer.draw(SectionHeading("WARRIOR DATA"))
+        writer.writeLine("Gunnery  : ${unit.gunnerySkill}", SheetStyles.TEXT_PRIMARY)
+        writer.writeLine("Piloting : ${unit.pilotingSkill}", SheetStyles.TEXT_PRIMARY)
+        writer.newLine()
+
+        writer.writeLine("Hits Taken", SheetStyles.TEXT_PRIMARY)
+        PilotHitsTrack.draw(
+            writer,
+            column = 0,
+            stride = 2,
+            hits = unit.pilotHits,
+            filledStyle = SheetStyles.DANGER,
+            emptyStyle = SheetStyles.TEXT_PRIMARY,
+        )
+        writer.newLine()
+
+        writer.writeLine("Consciousness#", SheetStyles.TEXT_MUTED)
+        var col = 0
+        for (i in 1..PILOT_DEATH_THRESHOLD) {
+            val label = consciousnessTarget(i)?.toString() ?: "Dead"
+            writer.write(col, label, SheetStyles.TEXT_MUTED)
+            col += 3
+        }
+        writer.newLine()
+    }
+}

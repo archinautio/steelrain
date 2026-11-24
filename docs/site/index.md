@@ -1,8 +1,8 @@
 # Getting started
 
-BattleTech is a turn-based game of armored combat on a hexagonal map, played in a terminal. Two
-players each command a force of BattleMechs, either sharing one terminal (hot-seat) or over the
-network.
+Steelrain is a turn-based game of armored combat on a hexagonal map, played in a terminal and
+following the BattleTech tabletop rules. Two players each command a force of BattleMechs, either
+sharing one terminal (hot-seat) or over the network.
 
 ![The game screen during movement: the hex map with woods, water and four mechs, the hexes the selected Wolverine can reach, its pilot, heat and armor in UNIT STATUS, and the log](assets/screenshots/game-overview.png)
 
@@ -21,45 +21,45 @@ network.
 
 ## Download
 
-Each [release](https://github.com/archinautio/battletech/releases) has two kinds of download.
+Each [release](https://github.com/archinautio/steelrain/releases) has two kinds of download.
 Pick one:
 
 - **With its own Java**, nothing else to install. Pick the file for your system:
 
     | System | File |
     |---|---|
-    | macOS (Apple Silicon) | `battletech-<version>-macos-aarch64.tar.gz` |
-    | Linux (x86-64) | `battletech-<version>-linux-x64.tar.gz` |
-    | Linux (ARM64) | `battletech-<version>-linux-aarch64.tar.gz` |
-    | Windows (x86-64) | `battletech-<version>-windows-x64.zip` |
+    | macOS (Apple Silicon) | `steelrain-<version>-macos-aarch64.tar.gz` |
+    | Linux (x86-64) | `steelrain-<version>-linux-x64.tar.gz` |
+    | Linux (ARM64) | `steelrain-<version>-linux-aarch64.tar.gz` |
+    | Windows (x86-64) | `steelrain-<version>-windows-x64.zip` |
 
-    Unpack it anywhere. The game is the `battletech` script inside (`battletech.bat` on
-    Windows); keep it next to `battletech.jar` and the `runtime` folder. To run it from any
+    Unpack it anywhere. The game is the `steelrain` script inside (`steelrain.bat` on
+    Windows); keep it next to `steelrain.jar` and the `runtime` folder. To run it from any
     directory, add that folder to your `PATH`, or on macOS and Linux link the script into a
     directory already on it.
 
-- **The jar**, `battletech-<version>.jar`, if you already have **Java 25** or later. Run it with
-  `java -jar battletech-<version>.jar`.
+- **The jar**, `steelrain-<version>.jar`, if you already have **Java 25** or later. Run it with
+  `java -jar steelrain-<version>.jar`.
 
 !!! warning "macOS blocks the first run"
     The downloads are not signed by Apple, so macOS may refuse to open them, saying it cannot
     verify the developer. Remove the download mark from the unpacked folder once:
 
     ```sh
-    xattr -dr com.apple.quarantine battletech-<version>-macos-aarch64
+    xattr -dr com.apple.quarantine steelrain-<version>-macos-aarch64
     ```
 
-These pages write the game's command as `battletech`. With the jar, type
-`java -jar battletech-<version>.jar` in its place; when you build from source, type
-`java -jar tui/build/libs/tui.jar`. Run `battletech --version` to see which version you have.
+These pages write the game's command as `steelrain`. With the jar, type
+`java -jar steelrain-<version>.jar` in its place; when you build from source, type
+`java -jar tui/build/libs/tui.jar`. Run `steelrain --version` to see which version you have.
 
 ### Build from source
 
 You need **JDK 25** and **Git**:
 
 ```sh
-git clone https://github.com/archinautio/battletech.git
-cd battletech
+git clone https://github.com/archinautio/steelrain.git
+cd steelrain
 ./gradlew :tui:shadowJar
 ```
 
@@ -69,11 +69,11 @@ instead of `./gradlew`.
 ## Play your first match
 
 ```sh
-battletech hot-seat
+steelrain hot-seat
 ```
 
 The match starts right away, with both players sharing your keyboard. It uses the built-in
-`default` scenario on the `battletech-classic` map: Player 1 has an Atlas and a Hunchback, and
+`default` scenario on the `classic` map: Player 1 has an Atlas and a Hunchback, and
 Player 2 has two Wolverines.
 
 The banner at the top always says whose turn it is and what to do next. A turn goes like this:
@@ -94,7 +94,7 @@ any time to show the keys for the current screen, and `Ctrl+C` to quit. See
 To choose the map and the mechs yourself, start the game with no arguments:
 
 ```sh
-battletech
+steelrain
 ```
 
 This opens the setup screen. To start a hot-seat match:

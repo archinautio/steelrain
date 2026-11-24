@@ -1,0 +1,693 @@
+package io.archinaut.steelrain.tui.view
+
+import io.archinaut.steelrain.tui.screen.AppRole
+import io.archinaut.steelrain.tactical.model.HexCoordinates
+import io.archinaut.steelrain.tactical.model.HexDirection
+import io.archinaut.steelrain.tactical.model.MechLocation
+import io.archinaut.steelrain.tactical.model.PlayerId
+import io.archinaut.steelrain.tactical.unit.AmmoType
+import io.archinaut.steelrain.tactical.unit.ForeignUnit
+import io.archinaut.steelrain.tactical.unit.HeatSink
+import io.archinaut.steelrain.tactical.unit.HeatSinkType
+import io.archinaut.steelrain.tactical.unit.HeatSource
+import io.archinaut.steelrain.tactical.unit.MovementThisTurn
+import io.archinaut.steelrain.tactical.unit.PILOT_DEATH_THRESHOLD
+import io.archinaut.steelrain.tactical.unit.PublicWeapon
+import io.archinaut.steelrain.tactical.unit.UnitId
+import io.archinaut.steelrain.tactical.unit.Weapon
+import io.archinaut.steelrain.tactical.unit.WeaponKind
+import io.archinaut.steelrain.tactical.unit.WeaponModel
+import io.archinaut.steelrain.tactical.unit.WeaponMountId
+import io.archinaut.steelrain.tactical.unit.mechLayout
+import io.archinaut.steelrain.tui.aGameMap
+import io.archinaut.steelrain.tui.aUnit
+import io.archinaut.steelrain.tui.anArmorLayout
+import io.archinaut.steelrain.tui.anInternalStructureLayout
+import io.archinaut.steelrain.tui.icon.ammoIcon
+import io.archinaut.steelrain.tui.icon.emptyCircleIcon
+import io.archinaut.steelrain.tui.icon.filledCircleIcon
+import io.archinaut.steelrain.tui.icon.infinityIcon
+import io.archinaut.steelrain.tui.icon.pilotDeadIcon
+import io.archinaut.steelrain.tui.screen.BoardRole
+import io.archinaut.tenter.color.StandardRole
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+import io.archinaut.tenter.terminal.CompletedFrame
+
+internal class UnitStatusViewTest {
+
+    /** Render via decorator at (0,0) — pixel-parity regression guard for box/coordinates. */
+    private fun renderDecorated(view: UnitStatusView, width: Int = 28, height: Int = 30): CompletedFrame =
+        renderInPanel(view, badge = '1', title = UnitStatusView.TITLE, width = width, height = height)
+
+    private fun aForeignUnit(
+        name: String = "Hunchback",
+        walkingMP: Int = 4,
+        runningMP: Int = 6,
+        jumpMP: Int = 0,
+        weapons: List<PublicWeapon> = listOf(PublicWeapon("AC/20", WeaponMountId(0))),
+        isProne: Boolean = false,
+        isShutdown: Boolean = false,
+        isDestroyed: Boolean = false,
+        isPilotConscious: Boolean = true,
+    ): ForeignUnit = ForeignUnit(
+        id = UnitId("u1"),
+        owner = PlayerId.PLAYER_2,
+        name = name,
+        tonnage = 50,
+        position = HexCoordinates(0, 0),
+        facing = HexDirection.N,
+        torsoFacing = HexDirection.N,
+        armor = anArmorLayout(),
+        maxArmor = anArmorLayout(),
+        walkingMP = walkingMP,
+        runningMP = runningMP,
+        jumpMP = jumpMP,
+        weapons = weapons,
+        isProne = isProne,
+        isShutdown = isShutdown,
+        isDestroyed = isDestroyed,
+        isPilotConscious = isPilotConscious,
+        movementThisTurn = MovementThisTurn.Stationary,
+    )
+
+    @Test
+    fun `renders unit name`() {
+        val unit = aUnit(id = "A1")
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val text = (2 until 11).joinToString("") { buffer.get(it, 2).symbol }
+        assertEquals("A1: Atlas", text)
+    }
+
+    @Test
+    fun `renders own special statuses between the unit name and pilot section`() {
+        val unit = aUnit(id = "A1").copy(isDestroyed = true, isPilotConscious = false)
+        val buffer = renderDecorated(UnitStatusView(unit, aGameMap()), height = 20)
+
+        val destroyedRow = rowContaining(buffer, 20, "DESTROYED")
+        val unconsciousRow = rowContaining(buffer, 20, "PILOT UNCONSCIOUS")
+        val pilotRow = rowContaining(buffer, 20, "─── PILOT")
+        assertEquals(destroyedRow + 1, unconsciousRow)
+        assertTrue(destroyedRow > rowContaining(buffer, 20, "A1: Atlas"))
+        assertTrue(unconsciousRow < pilotRow)
+        assertEquals(StandardRole.DANGER, buffer.get(2, destroyedRow).fg)
+        assertEquals(StandardRole.DANGER, buffer.get(2, unconsciousRow).fg)
+    }
+
+    @Test
+    fun `renders gunnery and piloting skills`() {
+        val unit = aUnit()
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val gunnery = (2 until 26).joinToString("") { buffer.get(it, 6).symbol }.trim()
+        assertEquals("Gunnery  : 4", gunnery)
+        val piloting = (2 until 26).joinToString("") { buffer.get(it, 7).symbol }.trim()
+        assertEquals("Piloting : 5", piloting)
+    }
+
+    @Test
+    fun `renders undamaged pilot hits track`() {
+        val unit = aUnit() // pilotHits = 0
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 5).symbol }
+        assertTrue(line.contains("Hits"))
+        assertEquals(0, line.split(filledCircleIcon()).size - 1)
+        assertEquals(6, line.split(emptyCircleIcon()).size - 1)
+    }
+
+    @Test
+    fun `renders damaged pilot hits track`() {
+        val unit = aUnit().copy(pilotHits = 2)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 5).symbol }
+        assertEquals(2, line.split(filledCircleIcon()).size - 1)
+        assertEquals(4, line.split(emptyCircleIcon()).size - 1)
+        // First hit dot is red, matching the destroyed-slot convention used elsewhere in this panel.
+        val firstDotCol = (2 until 26).first { buffer.get(it, 5).symbol == filledCircleIcon() }
+        assertEquals(StandardRole.DANGER, buffer.get(firstDotCol, 5).fg)
+    }
+
+    @Test
+    fun `renders skull in place of final hit dot when pilot dies`() {
+        val unit = aUnit().copy(pilotHits = PILOT_DEATH_THRESHOLD)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 5).symbol }
+        assertEquals(1, line.split(pilotDeadIcon()).size - 1)
+        assertEquals(PILOT_DEATH_THRESHOLD - 1, line.split(filledCircleIcon()).size - 1)
+        assertEquals(0, line.split(emptyCircleIcon()).size - 1)
+        val skullCol = (2 until 26).first { buffer.get(it, 5).symbol == pilotDeadIcon() }
+        assertEquals(StandardRole.DANGER, buffer.get(skullCol, 5).fg)
+    }
+
+    @Test
+    fun `renders heat bar`() {
+        val unit = aUnit()
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 14).symbol }
+        assertTrue(line.contains("[" + "░".repeat(20) + "]30"))
+    }
+
+    @Test
+    fun `renders current heat label above bar`() {
+        val unit = aUnit()
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        val label = (2 until 26).joinToString("") { buffer.get(it, 13).symbol }
+        assertTrue(label.contains("Current"))
+        val bar = (2 until 26).joinToString("") { buffer.get(it, 14).symbol }
+        assertTrue(bar.contains("]30"))
+    }
+
+    @Test
+    fun `renders STS dissipation bar with suffix`() {
+        val unit = aUnit(heatSink = HeatSink(HeatSinkType.STS, 10))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(line.contains("[" + "░".repeat(10) + "]STS 10"))
+        val oldSinkLine = (2 until 26).joinToString("") { buffer.get(it, 13).symbol }
+        assertFalse(oldSinkLine.contains("STS:"))
+    }
+
+    @Test
+    fun `renders DTS dissipation bar with units and dissipation suffix`() {
+        val unit = aUnit(heatSink = HeatSink(HeatSinkType.DTS, 10))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(line.contains("]DTS 10(20)"))
+    }
+
+    @Test
+    fun `renders heat value paired to bar fill without max`() {
+        // 15 of 30 -> barWidth=20 -> 10 filled cells. cx=2, anchorCol=12, "15" starts at col 11.
+        val unit = aUnit().copy(currentHeat = 15)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        // last digit sits under the last filled cell (col 12); value row is 15
+        assertEquals("1", buffer.get(11, 15).symbol)
+        assertEquals("5", buffer.get(12, 15).symbol)
+    }
+
+    @Test
+    fun `renders zero heat value under first bar cell`() {
+        val unit = aUnit() // currentHeat = 0
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        // cx=2, "[" prefix -> first cell at col 3
+        assertEquals("0", buffer.get(3, 15).symbol)
+    }
+
+    @Test
+    fun `renders with no unit selected shows empty`() {
+        val view = UnitStatusView(subject = null, map = aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val text = (2 until 18).joinToString("") { buffer.get(it, 2).symbol }
+        assertEquals("No unit selected", text.trim())
+    }
+
+    @Test
+    fun `renders box border`() {
+        val view = UnitStatusView(subject = null, map = aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        assertEquals("╭", buffer.get(0, 0).symbol)
+        assertEquals("╮", buffer.get(27, 0).symbol)
+        assertEquals("╰", buffer.get(0, 13).symbol)
+        assertEquals("╯", buffer.get(27, 13).symbol)
+    }
+
+    @Test
+    fun `renders walk and run movement points`() {
+        val unit = aUnit(walkingMP = 3, runningMP = 5)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 10).symbol }
+        assertTrue(line.contains("Walk"))
+        assertTrue(line.contains("Run"))
+        assertTrue(line.contains("3"))
+        assertTrue(line.contains("5"))
+    }
+
+    @Test
+    fun `renders jump only when nonzero`() {
+        val unit = aUnit()
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 14)
+
+        val jumpRow = (2 until 26).joinToString("") { buffer.get(it, 11).symbol }
+        assertFalse(jumpRow.contains("Jump"))
+        val heatHeader = (2 until 26).joinToString("") { buffer.get(it, 12).symbol }
+        assertTrue(heatHeader.contains("HEAT"))
+    }
+
+    @Test
+    fun `renders heat bar in red when overheated`() {
+        val unit = aUnit().copy(currentHeat = 22)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        assertEquals(StandardRole.DANGER, buffer.get(2, 14).fg)
+    }
+
+    @Test
+    fun `renders armor section header when armor is present`() {
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // Shifted down by: pilot hits line, "Current" label, current bar (2 rows),
+        // diss bar (2 rows), "Projected" label, projected bar (2 rows), blank.
+        val row22 = (2 until 26).joinToString("") { buffer.get(it, 22).symbol }
+        assertTrue(row22.contains("ARMOR"))
+    }
+
+    @Test
+    fun `renders head armor value in info`() {
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // HD value row: cy=23, "HD: 9" starts at cx+9=11
+        val line = (2 until 26).joinToString("") { buffer.get(it, 23).symbol }
+        assertTrue(line.contains("HD"))
+        assertTrue(line.contains("9"))
+        assertEquals(StandardRole.INFO, buffer.get(11, 23).fg) // 'H' of "HD: 9"
+    }
+
+    @Test
+    fun `renders destroyed armor location with strikethrough`() {
+        // Same HD layout as "renders head armor value in cyan", but with head internal
+        // structure zeroed out — that's what drives the destroyed rendering, not the armor value.
+        val unit = aUnit(armor = anArmorLayout(), internalStructure = anInternalStructureLayout(head = 0))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // HD value row: cy=23, "HD: 9" starts at cx+9=11
+        assertEquals(BoardRole.DESTROYED, buffer.get(11, 23).fg)
+        assertTrue(buffer.get(11, 23).strikethrough)
+    }
+
+    @Test
+    fun `renders intact armor location without strikethrough`() {
+        // Default internalStructure (head = 3) is intact.
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        assertFalse(buffer.get(11, 23).strikethrough)
+    }
+
+    @Test
+    fun `renders center torso armor in accent`() {
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // CT row: cy=24, "CT:47" starts at cx+9=11
+        val line = (2 until 26).joinToString("") { buffer.get(it, 24).symbol }
+        assertTrue(line.contains("CT"))
+        assertTrue(line.contains("47"))
+        assertEquals(StandardRole.ACCENT, buffer.get(11, 24).fg) // 'C' of "CT:47"
+    }
+
+    @Test
+    fun `renders torso rear values in default color`() {
+        val unit = aUnit(armor = anArmorLayout(centerTorsoRear = 8))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // Rear row: cy=25, CT rear "r: 8" starts at cx+10=12
+        val line = (2 until 26).joinToString("") { buffer.get(it, 25).symbol }
+        assertTrue(line.contains("r"))
+        assertEquals(StandardRole.DEFAULT, buffer.get(12, 25).fg, "'r' of CT rear renders in the default color")
+    }
+
+    @Test
+    fun `renders arm and leg armor values`() {
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view)
+
+        // Arms row: cy=26
+        val armsRow = (2 until 26).joinToString("") { buffer.get(it, 26).symbol }
+        assertTrue(armsRow.contains("LA"))
+        assertTrue(armsRow.contains("RA"))
+        // Legs row: cy=27
+        val legsRow = (2 until 26).joinToString("") { buffer.get(it, 27).symbol }
+        assertTrue(legsRow.contains("LL"))
+        assertTrue(legsRow.contains("RL"))
+        assertTrue(legsRow.contains("41"))
+    }
+
+    @Test
+    fun `renders committed heat sources in default color`() {
+        val unit = aUnit().copy(heatGeneratedThisTurn = listOf(HeatSource("Running", 2)))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        // Source line under the bar and the heat value line (row 16).
+        val line = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(line.contains("Running +2"))
+        assertEquals(StandardRole.DEFAULT, buffer.get(2, 16).fg, "renders in the default color")
+    }
+
+    @Test
+    fun `renders pending heat preview in gray`() {
+        val unit = aUnit()
+        val view = UnitStatusView(unit, aGameMap(), pendingHeat = listOf(HeatSource("Walking", 1)))
+        val buffer = renderDecorated(view, height = 20)
+
+        val line = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(line.contains("Walking +1"))
+        assertEquals(AppRole.DRAFT, buffer.get(2, 16).fg)
+    }
+
+    @Test
+    fun `renders dissipated heat capped at dissipation capacity`() {
+        // current 12, +2 running, dissipation 10 -> dissipated = min(14, 10) = 10 -> bar fully filled
+        val unit = aUnit().copy(
+            currentHeat = 12,
+            heatGeneratedThisTurn = listOf(HeatSource("Running", 2)),
+        )
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        // one source at row 16, diss bar at row 17
+        val dissBar = (2 until 26).joinToString("") { buffer.get(it, 17).symbol }
+        assertTrue(dissBar.contains("[" + "█".repeat(10) + "]STS 10"))
+        assertEquals("1", buffer.get(11, 18).symbol)
+        assertEquals("0", buffer.get(12, 18).symbol)
+    }
+
+    @Test
+    fun `renders dissipated heat from pending preview`() {
+        // pending 5, DTS 10 -> dissipation 20, dissipated = min(5, 20) = 5, width 10 -> 2 filled
+        val view = UnitStatusView(
+            aUnit(heatSink = HeatSink(HeatSinkType.DTS, 10)),
+            aGameMap(),
+            pendingHeat = listOf(HeatSource("Walking", 5)),
+        )
+        val buffer = renderDecorated(view, height = 20)
+
+        // pending source at row 16, diss bar at row 17
+        val dissBar = (2 until 26).joinToString("") { buffer.get(it, 17).symbol }
+        assertTrue(dissBar.contains("[██░░░░░░░░]DTS 10(20)"))
+        assertEquals("5", buffer.get(4, 18).symbol)
+    }
+
+    @Test
+    fun `renders dissipation bar in red when at capacity`() {
+        // same fixture as capped test: dissipated 10 >= 10*0.7 -> RED
+        val unit = aUnit().copy(
+            currentHeat = 12,
+            heatGeneratedThisTurn = listOf(HeatSource("Running", 2)),
+        )
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        assertEquals(StandardRole.DANGER, buffer.get(2, 17).fg)
+    }
+
+    @Test
+    fun `renders zero dissipation heat sink without error`() {
+        val unit = aUnit(heatSink = HeatSink(HeatSinkType.STS, 0))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 20)
+
+        val dissBar = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(dissBar.contains("[" + "░".repeat(10) + "]STS 0"))
+    }
+
+    @Test
+    fun `renders projected end-of-turn heat`() {
+        // current 12, +2 running, dissipates 10 -> projected 4
+        val unit = aUnit().copy(currentHeat = 12, heatGeneratedThisTurn = listOf(HeatSource("Running", 2)))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 23)
+
+        // "Current"(13), current bar(14), current value(15), one source(16), diss bar(17),
+        // diss value(18), "Projected"(19), projected bar(20), projected value(21)
+        val projectedLabel = (2 until 26).joinToString("") { buffer.get(it, 19).symbol }
+        assertTrue(projectedLabel.contains("Projected"))
+        val projectedValueRow = (2 until 26).joinToString("") { buffer.get(it, 21).symbol }
+        assertTrue(projectedValueRow.contains("4"))
+    }
+
+    private fun rowContaining(buffer: CompletedFrame, height: Int, text: String): Int {
+        for (row in 0 until height) {
+            val line = (2 until 26).joinToString("") { buffer.get(it, row).symbol }
+            if (line.contains(text)) return row
+        }
+        error("No row contains \"$text\"")
+    }
+
+    @Test
+    fun `renders ammo count with ammunition icon right-aligned`() {
+        val weapon = Weapon(
+            model = WeaponModel(
+                name = "AC/20", damage = 20, heat = 7,
+                shortRange = 3, mediumRange = 6, longRange = 9, kind = WeaponKind.Ballistic(AmmoType.AC20),
+            ),
+            mountId = WeaponMountId(0),
+            location = MechLocation.RIGHT_TORSO,
+        )
+        val layout = mechLayout { ammo(MechLocation.RIGHT_TORSO, AmmoType.AC20) }.layout
+        val unit = aUnit(weapons = listOf(weapon), criticalLayout = layout)
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 60)
+
+        val row = rowContaining(buffer, 60, "AC/20")
+        val line = (2 until 26).joinToString("") { buffer.get(it, row).symbol }
+        assertTrue(line.contains("5"))
+        assertEquals(ammoIcon(), buffer.get(25, row).symbol)
+    }
+
+    @Test
+    fun `renders destroyed weapon name with strikethrough`() {
+        val weapon = Weapon(
+            model = WeaponModel(
+                name = "Medium Laser", damage = 5, heat = 3,
+                shortRange = 3, mediumRange = 6, longRange = 9, kind = WeaponKind.Energy,
+            ),
+            mountId = WeaponMountId(0),
+            location = MechLocation.CENTER_TORSO,
+            destroyed = true,
+        )
+        val unit = aUnit(weapons = listOf(weapon))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 60)
+
+        val row = rowContaining(buffer, 60, "Medium Laser")
+        val nameCol = (2 until 26).first { buffer.get(it, row).symbol == "M" }
+        assertTrue(buffer.get(nameCol, row).strikethrough)
+    }
+
+    @Test
+    fun `renders intact weapon name without strikethrough`() {
+        val weapon = Weapon(
+            model = WeaponModel(
+                name = "Medium Laser", damage = 5, heat = 3,
+                shortRange = 3, mediumRange = 6, longRange = 9, kind = WeaponKind.Energy,
+            ),
+            mountId = WeaponMountId(0),
+            location = MechLocation.CENTER_TORSO,
+        )
+        val unit = aUnit(weapons = listOf(weapon))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 60)
+
+        val row = rowContaining(buffer, 60, "Medium Laser")
+        val nameCol = (2 until 26).first { buffer.get(it, row).symbol == "M" }
+        assertFalse(buffer.get(nameCol, row).strikethrough)
+    }
+
+    @Test
+    fun `renders all-intact critical hit dots as empty circles`() {
+        val unit = aUnit(armor = anArmorLayout())
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 40)
+
+        val row = rowContaining(buffer, 40, "Engine :")
+        val line = (2 until 26).joinToString("") { buffer.get(it, row).symbol }
+        assertEquals(3, line.split(emptyCircleIcon()).size - 1)
+        assertEquals(0, line.split(filledCircleIcon()).size - 1)
+    }
+
+    @Test
+    fun `renders destroyed engine crits as filled red dots`() {
+        val unit = aUnit(armor = anArmorLayout()).copy(
+            criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(0, 1)),
+        )
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 40)
+
+        val row = rowContaining(buffer, 40, "Engine :")
+        val line = (2 until 26).joinToString("") { buffer.get(it, row).symbol }
+        val filledCount = line.split(filledCircleIcon()).size - 1
+        assertEquals(2, filledCount)
+
+        // First dot column should be red (destroyed slot 0 is an Engine slot in CENTER_TORSO).
+        val firstDotCol = (2 until 26).first { buffer.get(it, row).symbol == filledCircleIcon() }
+        assertEquals(StandardRole.DANGER, buffer.get(firstDotCol, row).fg)
+    }
+
+    @Test
+    fun `renders destroyed gyro crits independently of engine crits`() {
+        val unit = aUnit(armor = anArmorLayout()).copy(
+            // CENTER_TORSO indices 3,4,5,6 are Gyro slots per the standard framework.
+            criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(3)),
+        )
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 40)
+
+        val engineRow = rowContaining(buffer, 40, "Engine :")
+        val engineLine = (2 until 26).joinToString("") { buffer.get(it, engineRow).symbol }
+        assertEquals(0, engineLine.split(filledCircleIcon()).size - 1)
+
+        val gyroRow = rowContaining(buffer, 40, "Gyro")
+        val gyroLine = (2 until 26).joinToString("") { buffer.get(it, gyroRow).symbol }
+        assertEquals(1, gyroLine.split(filledCircleIcon()).size - 1)
+    }
+
+    @Test
+    fun `renders infinity icon right-aligned for weapons without ammo`() {
+        val weapon = Weapon(
+            model = WeaponModel(
+                name = "Medium Laser", damage = 5, heat = 3,
+                shortRange = 3, mediumRange = 6, longRange = 9, kind = WeaponKind.Energy,
+            ),
+            mountId = WeaponMountId(0),
+            location = MechLocation.CENTER_TORSO,
+        )
+        val unit = aUnit(weapons = listOf(weapon))
+        val view = UnitStatusView(unit, aGameMap())
+        val buffer = renderDecorated(view, height = 60)
+
+        val row = rowContaining(buffer, 60, "Medium Laser")
+        val line = (2 until 26).joinToString("") { buffer.get(it, row).symbol }
+        assertFalse(line.contains("["))
+        assertEquals(infinityIcon(), buffer.get(25, row).symbol)
+    }
+
+    @Test
+    fun `renders public subject unit name`() {
+        val view = UnitStatusView(aForeignUnit(), aGameMap())
+        val buffer = renderDecorated(view)
+
+        val line = (2 until 15).joinToString("") { buffer.get(it, 2).symbol }
+        assertEquals("u1: Hunchback", line)
+        assertEquals(StandardRole.ACCENT, buffer.get(2, 2).fg)
+    }
+
+    @Test
+    fun `renders public special statuses for a foreign subject`() {
+        val unit = aForeignUnit(isShutdown = true, isProne = true)
+        val buffer = renderDecorated(UnitStatusView(unit, aGameMap()))
+
+        val shutdownRow = rowContaining(buffer, 30, "SHUTDOWN")
+        val proneRow = rowContaining(buffer, 30, "PRONE")
+        assertEquals(shutdownRow + 1, proneRow)
+        assertTrue(shutdownRow > rowContaining(buffer, 30, "u1: Hunchback"))
+        assertTrue(proneRow < rowContaining(buffer, 30, "MOVEMENT"))
+        assertEquals(StandardRole.DANGER, buffer.get(2, shutdownRow).fg)
+        assertEquals(StandardRole.DANGER, buffer.get(2, proneRow).fg)
+    }
+
+    @Test
+    fun `renders public subject MOVEMENT section with walk and run values`() {
+        val view = UnitStatusView(aForeignUnit(), aGameMap())
+        val buffer = renderDecorated(view)
+
+        val headerRow = (2 until 26).joinToString("") { buffer.get(it, 4).symbol }
+        assertTrue(headerRow.contains("MOVEMENT"))
+        val walkRunRow = (2 until 26).joinToString("") { buffer.get(it, 5).symbol }
+        assertTrue(walkRunRow.contains("Walk"))
+        assertTrue(walkRunRow.contains("Run"))
+        assertTrue(walkRunRow.contains("4"))
+        assertTrue(walkRunRow.contains("6"))
+    }
+
+    @Test
+    fun `renders public subject jump movement points only when nonzero`() {
+        val viewWithoutJump = UnitStatusView(aForeignUnit(), aGameMap())
+        val bufferWithoutJump = renderDecorated(viewWithoutJump)
+        val jumpRow = (2 until 26).joinToString("") { bufferWithoutJump.get(it, 6).symbol }
+        assertFalse(jumpRow.contains("Jump"))
+
+        val viewWithJump = UnitStatusView(aForeignUnit(jumpMP = 5), aGameMap())
+        val bufferWithJump = renderDecorated(viewWithJump)
+        val jumpRowPresent = (2 until 26).joinToString("") { bufferWithJump.get(it, 6).symbol }
+        assertTrue(jumpRowPresent.contains("Jump"))
+        assertTrue(jumpRowPresent.contains("5"))
+    }
+
+    @Test
+    fun `renders public subject ARMOR section with HD CT and LL values`() {
+        val view = UnitStatusView(aForeignUnit(), aGameMap())
+        val buffer = renderDecorated(view)
+
+        val armorHeader = (2 until 26).joinToString("") { buffer.get(it, 7).symbol }
+        assertTrue(armorHeader.contains("ARMOR"))
+        val hdRow = (2 until 26).joinToString("") { buffer.get(it, 8).symbol }
+        assertTrue(hdRow.contains("HD"))
+        assertTrue(hdRow.contains("9"))
+        val ctRow = (2 until 26).joinToString("") { buffer.get(it, 9).symbol }
+        assertTrue(ctRow.contains("CT"))
+        assertTrue(ctRow.contains("47"))
+        val llRow = (2 until 26).joinToString("") { buffer.get(it, 12).symbol }
+        assertTrue(llRow.contains("LL"))
+        assertTrue(llRow.contains("41"))
+    }
+
+    @Test
+    fun `renders public subject WEAPONS section with weapon names`() {
+        val view = UnitStatusView(
+            aForeignUnit(weapons = listOf(PublicWeapon("AC/20", WeaponMountId(0)), PublicWeapon("Medium Laser", WeaponMountId(1)))),
+            aGameMap(),
+        )
+        val buffer = renderDecorated(view)
+
+        val weaponsHeader = (2 until 26).joinToString("") { buffer.get(it, 14).symbol }
+        assertTrue(weaponsHeader.contains("WEAPONS"))
+        val weapon1Row = (2 until 26).joinToString("") { buffer.get(it, 15).symbol }
+        assertTrue(weapon1Row.contains("AC/20"))
+        val weapon2Row = (2 until 26).joinToString("") { buffer.get(it, 16).symbol }
+        assertTrue(weapon2Row.contains("Medium Laser"))
+    }
+
+    @Test
+    fun `does not render private-only sections for public subject`() {
+        val view = UnitStatusView(aForeignUnit(), aGameMap())
+        val buffer = renderDecorated(view)
+
+        val allText = (0 until 30).flatMap { row ->
+            (0 until 28).map { col -> buffer.get(col, row).symbol }
+        }.joinToString("")
+        assertFalse(allText.contains("PILOT"))
+        assertFalse(allText.contains("Gunnery"))
+        assertFalse(allText.contains("HEAT"))
+        assertFalse(allText.contains("Internal Structure"))
+        assertFalse(allText.contains("Critical hit points"))
+    }
+}
