@@ -3,11 +3,11 @@
 # Steelrain
 
 A turn-based game of armored mech combat on a hex map, played in a terminal (TUI), following
-the BattleTech tabletop rules. Written in Kotlin.
+the BattleTech tabletop rules. Supports hot-seat and network play.
 
-The TUI consumes [Tenter](https://github.com/archinautio/tenter) (`io.archinaut:tenter`) as a library resolved from Maven Central.
+![The game screen during movement: the hex map with woods, water and four mechs, the hexes the selected Wolverine can reach, its pilot, heat and armor in UNIT STATUS, and the log](docs/site/assets/screenshots/game-overview.png)
 
-Supports hot-seat and network play.
+Written in Kotlin. The TUI consumes [Tenter](https://github.com/archinautio/tenter) (`io.archinaut:tenter`) as a library resolved from Maven Central.
 
 - [User documentation](https://archinautio.github.io/steelrain/) — installation, setup, controls,
   network play, custom content, and the game rules.
