@@ -8,7 +8,7 @@ The TUI consumes [Tenter](https://github.com/archinautio/tenter) (`io.archinaut:
 
 Supports hot-seat and network play.
 
-- [User documentation](https://alejandropg.github.io/battletech/) — installation, setup, controls,
+- [User documentation](https://archinautio.github.io/battletech/) — installation, setup, controls,
   network play, custom content, and the game rules.
 - [Documentation source](docs/site/index.md) — read the player guides in this checkout.
 - [Architecture](docs/architecture.md) — module boundaries and implementation invariants.

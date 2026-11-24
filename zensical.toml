@@ -1,7 +1,7 @@
 [project]
 site_name = "BattleTech"
 site_description = "Play BattleTech in your terminal: installation, match setup, controls, network play, custom content, and the game rules."
-site_url = "https://alejandropg.github.io/battletech/"
+site_url = "https://archinautio.github.io/battletech/"
 repo_url = "https://github.com/archinautio/battletech"
 docs_dir = "docs/site"
 site_dir = "build/site"
