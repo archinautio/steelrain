@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Assertions.assertInstanceOf
 import org.junit.jupiter.api.Test
 
 /**
- * Ammunition consumption per shot (`docs/rules/ammunition.md`), including the
+ * Ammunition consumption per shot (`docs/site/rules/ammunition.md`), including the
  * [HasAmmoRule] block once every matching bin is empty.
  *
  * No dice are consumed by ammo decrements — decrements happen after all to-hit /

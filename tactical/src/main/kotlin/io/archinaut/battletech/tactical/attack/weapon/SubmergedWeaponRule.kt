@@ -8,7 +8,7 @@ import io.archinaut.battletech.tactical.rules.RuleRejection
 
 /**
  * Blocks weapon fire when the **attacker** is fully submerged and the weapon is not
- * [io.archinaut.battletech.tactical.unit.Weapon.underwaterCapable] (`docs/rules/water.md` §2).
+ * [io.archinaut.battletech.tactical.unit.Weapon.underwaterCapable] (`docs/site/rules/water.md` §2).
  *
  * All weapons in [io.archinaut.battletech.tactical.unit.WeaponModels] default to
  * `underwaterCapable = false`, so fire is blocked entirely for submerged units unless a

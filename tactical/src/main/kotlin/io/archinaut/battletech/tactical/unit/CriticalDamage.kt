@@ -31,20 +31,20 @@ public fun CombatUnit.destroyedSlotCount(
     return destroyedIndices.count { index -> slots.getOrNull(index)?.let(predicate) == true }
 }
 
-/** Number of destroyed Engine slots in the Center Torso (`docs/rules/critical-hits.md` §3). */
+/** Number of destroyed Engine slots in the Center Torso (`docs/site/rules/critical-hits.md` §3). */
 public fun CombatUnit.engineCritCount(): Int =
     destroyedSlotCount(MechLocation.CENTER_TORSO) { it is CriticalSlotContent.Engine }
 
-/** Number of destroyed Gyro slots in the Center Torso (`docs/rules/critical-hits.md` §3). */
+/** Number of destroyed Gyro slots in the Center Torso (`docs/site/rules/critical-hits.md` §3). */
 public fun CombatUnit.gyroCritCount(): Int =
     destroyedSlotCount(MechLocation.CENTER_TORSO) { it is CriticalSlotContent.Gyro }
 
-/** Number of destroyed Sensors slots in the Head (`docs/rules/critical-hits.md` §3). */
+/** Number of destroyed Sensors slots in the Head (`docs/site/rules/critical-hits.md` §3). */
 public fun CombatUnit.sensorCritCount(): Int =
     destroyedSlotCount(MechLocation.HEAD) { it is CriticalSlotContent.Sensors }
 
 /**
- * Number of destroyed Life Support slots in the Head (`docs/rules/critical-hits.md` §3).
+ * Number of destroyed Life Support slots in the Head (`docs/site/rules/critical-hits.md` §3).
  * Drives the per-turn pilot-damage sources wired in
  * [io.archinaut.battletech.tactical.heat.resolveUnitHeatPhase].
  */
@@ -86,7 +86,7 @@ public fun CombatUnit.cannotStandFromGyroDamage(): Boolean =
 
 /**
  * Number of legs whose internal structure has reached 0 on this unit (0, 1, or 2).
- * What that costs the unit is owned by `docs/rules/armor-damage.md` §8; both legs
+ * What that costs the unit is owned by `docs/site/rules/armor-damage.md` §8; both legs
  * destroyed triggers [DestructionReason.BOTH_LEGS_DESTROYED] via [destructionReason].
  */
 public fun CombatUnit.destroyedLegCount(): Int {
@@ -96,7 +96,7 @@ public fun CombatUnit.destroyedLegCount(): Int {
     return count
 }
 
-/** PSR modifier per destroyed leg (`docs/rules/pilot.md` §3). */
+/** PSR modifier per destroyed leg (`docs/site/rules/pilot.md` §3). */
 public const val LEG_PSR_PENALTY: Int = 1
 
 /**

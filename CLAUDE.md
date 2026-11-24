@@ -10,14 +10,16 @@ Not needed for everyday context — read the row's doc when its trigger applies.
 
 | Doc | Read when |
 |---|---|
-| `docs/rules/index.md` | Implementing, changing, or reviewing a game rule, or a magic number in code or a test expectation is a rules value. It routes to the one doc owning each rule — trust that doc over a number restated elsewhere, and over general BattleTech knowledge. |
+| `docs/site/rules/index.md` | Implementing, changing, or reviewing a game rule, or a magic number in code or a test expectation is a rules value. It routes to the one doc owning each rule — trust that doc over a number restated elsewhere, and over general BattleTech knowledge. |
+| `docs/site/` | Changing anything a player sees (a command, option, key, message, file format, or rule): update the public page that owns it in the same change. Player-facing only — no internals. |
+| `docs/documentation.md` | Adding or moving documentation, or previewing/validating/publishing the public site (`zensical build --clean --strict`). |
 | `docs/architecture.md` | Navigating inside a module or moving content between doc tiers. Package layout, invariant rationale. |
 | `docs/build.md` | Touching `buildSrc/`, a `build.gradle.kts`, module dependencies, or `unit/`/`map/`/`mech/`/`theme/`/shadow-jar packaging. |
 | `docs/wire-protocol.md` | Adding or changing a wire-crossing `@Serializable sealed` variant, a failing wire-discriminator test, or a non-additive protocol change. |
 | `docs/tui-testing.md` | Hand-checking TUI rendering that can't be expressed as a unit test; automated tests are the primary strategy. |
-| `docs/color-themes.md` | Touching `theme/*.json`, color roles, or the theme contrast/distinctness guarantees. |
-| `docs/unit-files.md` | Touching `unit/*.json` or unit-collection loading and validation. |
-| `docs/mech-files.md` | Touching `mech/*.json`, mech collection loading, or stable weapon identifiers used by those files. |
+| `docs/color-themes.md` | Touching `theme/*.json`, color roles, or the theme contrast/distinctness guarantees (format: `docs/site/themes.md`). |
+| `docs/unit-files.md` | Touching `unit/*.json` or unit-collection loading and validation (format: `docs/site/custom-content.md`). |
+| `docs/mech-files.md` | Touching `mech/*.json`, mech collection loading, or stable weapon identifiers used by those files (format: `docs/site/custom-content.md`). |
 
 ## Technology Stack
 

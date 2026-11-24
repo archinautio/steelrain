@@ -27,7 +27,7 @@ import io.archinaut.battletech.tactical.unit.consumeOneRoundFromAvailableBin
  *     the *evolving* unit — so a later attack's roll-again sees an earlier attack's
  *     already-destroyed slots. A crit check fires once per [LocationDamage] step that
  *     dealt structure damage, plus once more for the hit location on a natural-2
- *     through-armor crit (`docs/rules/armor-damage.md` — The Natural 2 Rule) even when no IS damage
+ *     through-armor crit (`docs/site/rules/armor-damage.md` — The Natural 2 Rule) even when no IS damage
  *     occurred. `isDestroyed`/`MatchEnded` evaluation is deferred to the session's
  *     post-volley destruction sweep, not decided here.
  */
@@ -118,7 +118,7 @@ public fun applyDamage(
 ): CombatUnit = resolveDamage(unit, location, damage, useRearArmor).unit
 
 /**
- * Applies [damage] to [location] on [unit] per `docs/rules/armor-damage.md` §1 and §5.
+ * Applies [damage] to [location] on [unit] per `docs/site/rules/armor-damage.md` §1 and §5.
  * Transferred damage hits the new location's armor first and preserves [useRearArmor].
  */
 public fun resolveDamage(

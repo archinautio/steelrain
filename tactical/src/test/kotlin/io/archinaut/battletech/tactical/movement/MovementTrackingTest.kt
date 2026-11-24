@@ -78,7 +78,7 @@ internal class MovementTrackingTest {
     }
 
     // -------------------------------------------------------------------------
-    // Stationary (0 MP) vs turn-in-place (>=1 MP, 0 hexes) — docs/rules/to-hit-modifiers.md
+    // Stationary (0 MP) vs turn-in-place (>=1 MP, 0 hexes) — docs/site/rules/to-hit-modifiers.md
     // "Stationary attacker -> +0"; a turn-in-place still costs MP and stays Moved(mode, 0).
     // -------------------------------------------------------------------------
 

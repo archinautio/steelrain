@@ -9,7 +9,7 @@ import io.archinaut.battletech.tactical.unit.CombatUnit
 import io.archinaut.battletech.tactical.unit.PILOT_DEATH_THRESHOLD
 
 /**
- * Consciousness-check target (`docs/rules/pilot.md` §2), keyed by the pilot's *current*
+ * Consciousness-check target (`docs/site/rules/pilot.md` §2), keyed by the pilot's *current*
  * hit count after the hit being resolved is applied. A hit count with no entry here
  * never reaches this table: 0 hits never triggers a check, and [PILOT_DEATH_THRESHOLD]
  * or more is death, not a check.
@@ -32,7 +32,7 @@ public fun consciousnessTarget(hits: Int): Int? = CONSCIOUSNESS_TARGET[hits]
 
 /**
  * The single entry point for applying one pilot hit to [unit], whatever inflicted it
- * (`docs/rules/pilot.md` §1–2).
+ * (`docs/site/rules/pilot.md` §1–2).
  *
  * On death no consciousness roll is made, and [PilotHit.consciousnessRoll] is null —
  * [io.archinaut.battletech.tactical.unit.destructionReason] picks up `PILOT_DEAD` from the updated
@@ -66,7 +66,7 @@ public fun applyPilotHit(unit: CombatUnit, roller: DiceRoller): Pair<CombatUnit,
 
 /**
  * Consciousness RECOVERY attempt for a pilot who is alive but unconscious
- * (`docs/rules/pilot.md` §2). ASSUMPTION: the doc does not state the recovery target, so
+ * (`docs/site/rules/pilot.md` §2). ASSUMPTION: the doc does not state the recovery target, so
  * this reuses [CONSCIOUSNESS_TARGET] keyed by the pilot's *current* (unchanged) hit
  * count, mirroring [HeatPhaseHandler]'s shutdown/restart pattern — an "avoid bad state"
  * roll while down, a recovery attempt every turn while up.
@@ -85,7 +85,7 @@ public fun attemptConsciousnessRecovery(unit: CombatUnit, roller: DiceRoller): P
 }
 
 /**
- * Applies the pilot hits an ammo explosion inflicts on [unit] (`docs/rules/pilot.md` §1): each
+ * Applies the pilot hits an ammo explosion inflicts on [unit] (`docs/site/rules/pilot.md` §1): each
  * hit runs its own consciousness check via [applyPilotHit]. Shared by [CriticalHitResolution]'s
  * two detonation sites (limb blow-off, ordinary crit) and
  * [io.archinaut.battletech.tactical.heat.HeatPhaseHandler]'s heat-driven cook-off.

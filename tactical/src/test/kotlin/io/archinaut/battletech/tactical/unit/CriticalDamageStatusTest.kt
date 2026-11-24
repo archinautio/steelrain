@@ -28,7 +28,7 @@ internal class CriticalDamageStatusTest {
 
     @Test
     fun `engine status reports capacity 3 and heat-per-turn penalty`() {
-        // CENTER_TORSO Engine slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Engine slots (`docs/site/rules/critical-hits.md` §3).
         val oneHit = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(0)))
         val twoHits = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(0, 7)))
         val threeHits = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(0, 7, 8)))
@@ -53,7 +53,7 @@ internal class CriticalDamageStatusTest {
 
     @Test
     fun `gyro status reports capacity 2 - 1 crit is PSR penalty, 2 crits cannot stand`() {
-        // CENTER_TORSO Gyro slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Gyro slots (`docs/site/rules/critical-hits.md` §3).
         val oneHit = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(3)))
         val twoHits = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(3, 4)))
 
@@ -71,7 +71,7 @@ internal class CriticalDamageStatusTest {
 
     @Test
     fun `sensor status reports capacity 2 - 1 crit is to-hit penalty, 2 crits cannot fire`() {
-        // HEAD Sensors slots (`docs/rules/critical-hits.md` §3).
+        // HEAD Sensors slots (`docs/site/rules/critical-hits.md` §3).
         val oneHit = aUnit().copy(criticalHits = mapOf(MechLocation.HEAD to setOf(1)))
         val twoHits = aUnit().copy(criticalHits = mapOf(MechLocation.HEAD to setOf(1, 4)))
 
@@ -89,7 +89,7 @@ internal class CriticalDamageStatusTest {
 
     @Test
     fun `life support status reports capacity 2 - 1 crit is heat-threshold hit, 2 crits is per-turn hit`() {
-        // HEAD LifeSupport slots (`docs/rules/critical-hits.md` §3).
+        // HEAD LifeSupport slots (`docs/site/rules/critical-hits.md` §3).
         val oneHit = aUnit().copy(criticalHits = mapOf(MechLocation.HEAD to setOf(0)))
         val twoHits = aUnit().copy(criticalHits = mapOf(MechLocation.HEAD to setOf(0, 5)))
 

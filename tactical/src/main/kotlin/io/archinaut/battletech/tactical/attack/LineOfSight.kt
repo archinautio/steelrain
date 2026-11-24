@@ -11,7 +11,7 @@ import io.archinaut.battletech.tactical.model.Terrain
  * @param woodsModifier total to-hit penalty from intervening and target-hex woods.
  * @param partialCover true when the target's lower body is masked — either by an
  *   intervening obstacle or by the target standing in depth-1 water. Both sources
- *   produce the same effect (`docs/rules/line-of-sight.md` §3).
+ *   produce the same effect (`docs/site/rules/line-of-sight.md` §3).
  * @param blockerHex the first hex responsible for blocking, or null when unblocked.
  * @param blockingTerrain the terrain at [blockerHex], or null when unblocked.
  */
@@ -33,7 +33,7 @@ public data class LineOfSightResult(
  * and no need for the target's private state.
  *
  * Woods accumulation, elevation blocking and partial cover are all owned by
- * `docs/rules/line-of-sight.md` §1–3. Two modelling details it does not pin down:
+ * `docs/site/rules/line-of-sight.md` §1–3. Two modelling details it does not pin down:
  * woods accumulate over intervening hexes only (the target's own hex adds to
  * [LineOfSightResult.woodsModifier] but not to the blocking threshold), and elevation
  * for each position is looked up from [map] with missing hexes defaulting to 0.
@@ -71,7 +71,7 @@ public fun lineOfSight(attackerPosition: HexCoordinates, targetPosition: HexCoor
 
         // Accumulate woods levels for the blocking threshold. ROUGH (and CLEAR/WATER) fall
         // through to 0 deliberately — rough terrain never blocks LOS or adds a to-hit modifier
-        // (docs/rules/line-of-sight.md §1).
+        // (docs/site/rules/line-of-sight.md §1).
         val hexWoodsLevels = when (hex?.terrain) {
             Terrain.LIGHT_WOODS -> 1
             Terrain.HEAVY_WOODS -> 2
@@ -100,7 +100,7 @@ public fun lineOfSight(attackerPosition: HexCoordinates, targetPosition: HexCoor
     }
 
     // Depth-1 water gives the same partial cover as an intervening obstacle
-    // (`docs/rules/water.md` §1). ASSUMPTION: the docs do not state that the two
+    // (`docs/site/rules/water.md` §1). ASSUMPTION: the docs do not state that the two
     // sources are interchangeable; this treats them as one flag.
     val targetInShallowWater = (map.hexes[targetPosition]?.depth ?: 0) == 1
 

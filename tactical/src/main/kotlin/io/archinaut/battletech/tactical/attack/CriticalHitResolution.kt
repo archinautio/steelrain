@@ -26,7 +26,7 @@ private val ARM_OR_LEG_LOCATIONS: Set<MechLocation> = setOf(
 
 /**
  * Number of components destroyed by a 2d6 crit-check roll of [total] at [location]
- * (`docs/rules/critical-hits.md` §1). A limb blow-off is represented as a sentinel count
+ * (`docs/site/rules/critical-hits.md` §1). A limb blow-off is represented as a sentinel count
  * larger than any location's slot count, so callers can detect it via [isLimbBlownOff]
  * without a separate enum.
  */
@@ -46,7 +46,7 @@ private data class SlotPick(val index: Int, val content: CriticalSlotContent)
 
 /**
  * Picks one valid (non-empty, not-already-destroyed) slot in [location] using the
- * dice procedure in `docs/rules/critical-hits.md` §2–3. Rolls again (consuming fresh
+ * dice procedure in `docs/site/rules/critical-hits.md` §2–3. Rolls again (consuming fresh
  * dice, in order) whenever the chosen slot is [CriticalSlotContent.Empty] or already
  * destroyed on [unit].
  *
@@ -75,7 +75,7 @@ private fun pickSlot(unit: CombatUnit, location: MechLocation, roller: DiceRolle
 }
 
 /**
- * Detonates the ammo bin at [binLocation]/[slotIndex] on [unit] (`docs/rules/critical-hits.md`
+ * Detonates the ammo bin at [binLocation]/[slotIndex] on [unit] (`docs/site/rules/critical-hits.md`
  * §5): the total damage of [bin]'s remaining shots is applied through the standard
  * [applyDamage] path to [damageLocation] — the bin's own location for a critical-hit
  * detonation, or `CENTER_TORSO` for the heat-phase cook-off
@@ -103,7 +103,7 @@ public fun detonateAmmoBin(
 
 /**
  * Applies the per-component consequence of destroying [content] at [location] on [unit]
- * (`docs/rules/critical-hits.md` §5). Only three contents carry one here — a [Weapon]
+ * (`docs/site/rules/critical-hits.md` §5). Only three contents carry one here — a [Weapon]
  * mount, an ammo bin (via [detonateAmmoBin]), and a cockpit; everything else resolves to
  * no additional consequence. Returns the updated unit and the [GameEvent]s produced.
  * Callers must check for [AmmoExploded] in the returned list to trigger the
@@ -127,7 +127,7 @@ private fun CombatUnit.applyCritConsequence(
 }
 
 /**
- * Resolves a single crit *check* at [location] on [unit] (`docs/rules/critical-hits.md`
+ * Resolves a single crit *check* at [location] on [unit] (`docs/site/rules/critical-hits.md`
  * §1–3): rolls the crit table, then resolves each scored crit by picking a slot and
  * marking it destroyed. On a limb blow-off every slot in [location] is marked destroyed
  * and its internal structure zeroed, leaving `destructionReason` and the session's

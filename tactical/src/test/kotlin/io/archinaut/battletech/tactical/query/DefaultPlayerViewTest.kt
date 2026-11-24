@@ -128,7 +128,7 @@ internal class DefaultPlayerViewTest {
 
     @Test
     fun `a unit with 2 sensor crits is blind and has no valid targets`() {
-        // HEAD Sensors slots (`docs/rules/critical-hits.md` §3).
+        // HEAD Sensors slots (`docs/site/rules/critical-hits.md` §3).
         val attacker = aUnit(
             id = "attacker",
             owner = PlayerId.PLAYER_1,

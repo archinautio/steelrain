@@ -8,7 +8,7 @@ public object HitLocationTable {
 
     /**
      * Returns the hit location for a 2d6 [dieResult] in [direction]
-     * (`docs/rules/armor-damage.md` — Hit Location Tables). [direction] defaults to
+     * (`docs/site/rules/armor-damage.md` — Hit Location Tables). [direction] defaults to
      * [AttackDirection.FRONT] for callers with no attack arc of their own, such as
      * fall damage.
      */
@@ -22,7 +22,7 @@ public object HitLocationTable {
         return column[dieResult - 2]
     }
 
-    // Columns transcribed from `docs/rules/armor-damage.md` — Hit Location Tables.
+    // Columns transcribed from `docs/site/rules/armor-damage.md` — Hit Location Tables.
     private val FRONT_REAR = listOf(
         /* 2  */ HitLocation.CENTER_TORSO,
         /* 3  */ HitLocation.RIGHT_ARM,

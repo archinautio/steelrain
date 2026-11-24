@@ -45,7 +45,7 @@ internal class DestructionTest {
 
     @Test
     fun `3 engine crits returns ENGINE_DESTROYED`() {
-        // CENTER_TORSO Engine slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Engine slots (`docs/site/rules/critical-hits.md` §3).
         val unit = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(0, 1, 2)))
 
         assertThat(destructionReason(unit)).isEqualTo(DestructionReason.ENGINE_DESTROYED)
@@ -53,7 +53,7 @@ internal class DestructionTest {
 
     @Test
     fun `2 gyro crits do not eliminate the unit (immobilized, not destroyed)`() {
-        // CENTER_TORSO Gyro slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Gyro slots (`docs/site/rules/critical-hits.md` §3).
         val unit = aUnit().copy(criticalHits = mapOf(MechLocation.CENTER_TORSO to setOf(3, 4)))
 
         assertThat(destructionReason(unit)).isNull()

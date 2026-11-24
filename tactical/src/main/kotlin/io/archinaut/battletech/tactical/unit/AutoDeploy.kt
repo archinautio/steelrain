@@ -18,7 +18,7 @@ public class DeploymentException(message: String) : Exception(message)
 /**
  * Turns a [MatchPlan] into a validated starting [GameState] with no human placement step: each
  * player's units land at random hexes within the [DEPLOYMENT_ROWS] rows nearest its own home edge.
- * There is no rule in `docs/rules/` for which hexes a 'Mech may deploy into, and the movement code
+ * There is no rule in `docs/site/rules/` for which hexes a 'Mech may deploy into, and the movement code
  * ([io.archinaut.battletech.tactical.movement.ReachabilityCalculator]) applies no terrain-based passability
  * check either — every hex that exists on the board is a legal move destination there. [AutoDeploy]
  * follows the same rule: a hex is a legal deployment hex iff it exists in [GameMap.hexes].

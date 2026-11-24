@@ -23,7 +23,7 @@ public fun pilotingSkillRoll(unit: CombatUnit, roller: DiceRoller, modifier: Int
 }
 
 /**
- * PSR modifier from [unit]'s gyro critical hits (`docs/rules/critical-hits.md` §5).
+ * PSR modifier from [unit]'s gyro critical hits (`docs/site/rules/critical-hits.md` §5).
  * Derives from the single tier -> effect source, [critEffects], so it computes harmlessly
  * even for a caller running ahead of the destruction sweep.
  */

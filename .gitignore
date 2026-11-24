@@ -15,10 +15,13 @@ build/
 .bot_env/
 .claude/settings.local.json
 .claude/worktrees/
-.github/
 .junie/
 .scratch/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Documentation
+.venv-docs/
+.cache/

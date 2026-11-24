@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Unit tests for [lineOfSight] against `docs/rules/line-of-sight.md` §1–3.
+ * Unit tests for [lineOfSight] against `docs/site/rules/line-of-sight.md` §1–3.
  *
  * All tests use a straight-column layout so the intervening hexes are predictable:
  *   attacker (0,0) → target (0,3): intervening hexes are (0,1) and (0,2).

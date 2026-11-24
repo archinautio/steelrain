@@ -3,7 +3,7 @@ package io.archinaut.battletech.tactical.model
 /**
  * Returns the water depth (in levels) of the hex at [position], or 0 if the hex is
  * dry or absent from [map]. What each depth does to a unit is owned by
- * `docs/rules/water.md`.
+ * `docs/site/rules/water.md`.
  *
  * This is the single authoritative query for water depth across the engine. Call sites in
  * `PhysicalReachRules`, `LineOfSight`, `SubmergedWeaponRule`, `HeatPhaseHandler`, and

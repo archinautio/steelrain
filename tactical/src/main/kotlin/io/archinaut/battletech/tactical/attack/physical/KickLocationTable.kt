@@ -3,7 +3,7 @@ package io.archinaut.battletech.tactical.attack.physical
 import io.archinaut.battletech.tactical.attack.AttackDirection
 import io.archinaut.battletech.tactical.attack.HitLocation
 
-/** Kick Location Table (`docs/rules/physical-attacks.md` §7). */
+/** Kick Location Table (`docs/site/rules/physical-attacks.md` §7). */
 public object KickLocationTable {
 
     public fun roll(dieResult: Int, direction: AttackDirection): HitLocation {

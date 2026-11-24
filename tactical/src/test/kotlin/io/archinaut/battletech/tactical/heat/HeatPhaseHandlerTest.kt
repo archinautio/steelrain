@@ -101,7 +101,7 @@ internal class HeatPhaseHandlerTest {
 
     @Test
     fun `1 engine crit adds 5 heat during the heat fold`() {
-        // CENTER_TORSO Engine slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Engine slots (`docs/site/rules/critical-hits.md` §3).
         // No dissipation (0 heat sinks) so the +5 engine heat is visible undamped.
         val unit = aUnit(
             heatSink = HeatSink(HeatSinkType.STS, 0),
@@ -148,7 +148,7 @@ internal class HeatPhaseHandlerTest {
 
     @Test
     fun `1st life support crit with heat 15 or higher gives the pilot 1 hit`() {
-        // HEAD LifeSupport slots (`docs/rules/critical-hits.md` §3). No heat sinks and no
+        // HEAD LifeSupport slots (`docs/site/rules/critical-hits.md` §3). No heat sinks and no
         // engine crits, so heat stays at 15 after the fold. At that heat three 2d6 rolls
         // are consumed, each passed by (3,3): shutdown avoidance, the pilot hit's
         // consciousness check, and ammo-explosion avoidance (rolled even with no
@@ -182,7 +182,7 @@ internal class HeatPhaseHandlerTest {
 
     @Test
     fun `2nd life support crit gives the pilot 1 hit regardless of heat`() {
-        // HEAD LifeSupport slots (`docs/rules/critical-hits.md` §3).
+        // HEAD LifeSupport slots (`docs/site/rules/critical-hits.md` §3).
         val unit = aUnit(
             heatSink = HeatSink(HeatSinkType.STS, 0),
             weapons = listOf(mediumLaser()),

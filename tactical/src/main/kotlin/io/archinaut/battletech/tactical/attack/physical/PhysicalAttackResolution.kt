@@ -42,7 +42,7 @@ public fun resolvePhysicalAttacks(
         }
     }
 
-    // Kick knockdown (`docs/rules/physical-attacks.md` §8).
+    // Kick knockdown (`docs/site/rules/physical-attacks.md` §8).
     val finalResults = damagedResults.map { (declaration, result) ->
         if (declaration.kind !is PhysicalAttackKind.Kick) return@map result
 

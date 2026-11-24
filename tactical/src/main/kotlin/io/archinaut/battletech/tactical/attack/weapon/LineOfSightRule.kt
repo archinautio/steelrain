@@ -7,7 +7,7 @@ import io.archinaut.battletech.tactical.model.Terrain
 import io.archinaut.battletech.tactical.rules.RuleResult
 import io.archinaut.battletech.tactical.rules.RuleRejection
 
-/** Blocks an attack when line of sight is obstructed (`docs/rules/line-of-sight.md` §1–2). */
+/** Blocks an attack when line of sight is obstructed (`docs/site/rules/line-of-sight.md` §1–2). */
 public class LineOfSightRule : AttackRule<AttackContext> {
 
     override fun evaluate(context: AttackContext): RuleResult {

@@ -4,7 +4,7 @@ import io.archinaut.battletech.tactical.attack.AttackDirection
 import io.archinaut.battletech.tactical.attack.HitLocation
 
 /**
- * Punch Location Table (`docs/rules/physical-attacks.md` §6). Indexed by a 1d6 roll and
+ * Punch Location Table (`docs/site/rules/physical-attacks.md` §6). Indexed by a 1d6 roll and
  * the [AttackDirection] (the target's struck side).
  */
 public object PunchLocationTable {

@@ -1,0 +1,48 @@
+[project]
+site_name = "BattleTech"
+site_description = "Play BattleTech in your terminal: installation, match setup, controls, network play, custom content, and the game rules."
+site_url = "https://alejandropg.github.io/battletech/"
+repo_url = "https://github.com/alejandropg/battletech"
+docs_dir = "docs/site"
+site_dir = "build/site"
+strict = true
+nav = [
+  { "Getting started" = "index.md" },
+  { "Setting up a match" = "setup.md" },
+  { "Playing a match" = "playing.md" },
+  { "Network play" = "network.md" },
+  { "Command line" = "command-line.md" },
+  { "Custom maps, units and mechs" = "custom-content.md" },
+  { "Color themes" = "themes.md" },
+  { "Rules" = [
+    { "Overview" = "rules/index.md" },
+    { "Movement" = "rules/movement.md" },
+    { "To-hit modifiers" = "rules/to-hit-modifiers.md" },
+    { "Line of sight" = "rules/line-of-sight.md" },
+    { "Cluster weapons" = "rules/cluster-weapons.md" },
+    { "Ammunition" = "rules/ammunition.md" },
+    { "Physical attacks" = "rules/physical-attacks.md" },
+    { "Armor and damage" = "rules/armor-damage.md" },
+    { "Critical hits" = "rules/critical-hits.md" },
+    { "Pilot" = "rules/pilot.md" },
+    { "Heat" = "rules/heat.md" },
+    { "Water" = "rules/water.md" },
+    { "Victory" = "rules/victory.md" },
+  ] },
+]
+
+[project.theme]
+language = "en"
+features = ["content.code.copy", "navigation.footer"]
+font = false
+
+[project.validation]
+invalid_links = true
+invalid_link_anchors = true
+
+[project.markdown_extensions]
+admonition = {}
+tables = {}
+toc.permalink = true
+pymdownx.highlight = { pygments_lang_class = true }
+pymdownx.superfences = {}

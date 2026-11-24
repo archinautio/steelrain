@@ -2,7 +2,7 @@ package io.archinaut.battletech.tactical.unit
 
 public object InternalStructureTables {
 
-    // Values transcribed from `docs/rules/armor-damage.md` §2.
+    // Values transcribed from `docs/site/rules/armor-damage.md` §2.
     public fun forTonnage(tonnage: Int): InternalStructureLayout = when (tonnage) {
         20  -> InternalStructureLayout(
             head = 3,

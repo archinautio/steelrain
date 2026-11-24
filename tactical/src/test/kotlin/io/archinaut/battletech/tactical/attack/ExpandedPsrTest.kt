@@ -21,9 +21,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 /**
- * Forced-PSR and pilot-damage triggers: the 20-damage PSR (`docs/rules/pilot.md` §3),
- * head IS penetration (`docs/rules/pilot.md` §1), and crit-triggered ammo explosions
- * (`docs/rules/critical-hits.md` §5).
+ * Forced-PSR and pilot-damage triggers: the 20-damage PSR (`docs/site/rules/pilot.md` §3),
+ * head IS penetration (`docs/site/rules/pilot.md` §1), and crit-triggered ammo explosions
+ * (`docs/site/rules/critical-hits.md` §5).
  */
 internal class ExpandedPsrTest {
 

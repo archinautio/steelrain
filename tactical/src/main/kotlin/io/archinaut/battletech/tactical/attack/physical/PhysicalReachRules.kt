@@ -9,7 +9,7 @@ import io.archinaut.battletech.tactical.rules.RuleResult
 import io.archinaut.battletech.tactical.rules.RuleRejection
 import kotlin.math.abs
 
-/** Punch reach: elevation and water-depth limits (`docs/rules/physical-attacks.md` §3). */
+/** Punch reach: elevation and water-depth limits (`docs/site/rules/physical-attacks.md` §3). */
 public class PunchReachRule : AttackRule<AttackContext> {
     override fun evaluate(context: AttackContext): RuleResult {
         val depth = unitWaterDepth(context.target.position, context.map)
@@ -21,7 +21,7 @@ public class PunchReachRule : AttackRule<AttackContext> {
     }
 }
 
-/** Kick reach: elevation and water-depth limits (`docs/rules/physical-attacks.md` §3). */
+/** Kick reach: elevation and water-depth limits (`docs/site/rules/physical-attacks.md` §3). */
 public class KickReachRule : AttackRule<AttackContext> {
     override fun evaluate(context: AttackContext): RuleResult {
         val depth = unitWaterDepth(context.target.position, context.map)

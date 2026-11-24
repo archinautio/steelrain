@@ -107,7 +107,7 @@ private fun resolvePower(unit: CombatUnit, roller: DiceRoller): Pair<CombatUnit,
 }
 
 /**
- * Life-support pilot damage (`docs/rules/critical-hits.md` §5), evaluated using
+ * Life-support pilot damage (`docs/site/rules/critical-hits.md` §5), evaluated using
  * [CombatUnit.critEffects] for [CriticalComponent.LIFE_SUPPORT], the single tier ->
  * effect source.
  *
@@ -151,7 +151,7 @@ private fun resolveConsciousnessRecovery(
 }
 
 /**
- * Cockpit flooding (`docs/rules/water.md` §2). ASSUMPTION: the doc says the pilot "risks
+ * Cockpit flooding (`docs/site/rules/water.md` §2). ASSUMPTION: the doc says the pilot "risks
  * drowning over time" without pinning a rate, so this applies one pilot hit per Heat
  * Phase while the unit remains prone and submerged.
  *
@@ -179,7 +179,7 @@ private fun resolveDrowning(
 }
 
 /**
- * Heat-driven ammo cook-off (`docs/rules/critical-hits.md` §5). On a failed avoidance
+ * Heat-driven ammo cook-off (`docs/site/rules/critical-hits.md` §5). On a failed avoidance
  * roll the bin with the greatest potential damage detonates via the shared
  * [detonateAmmoBin] helper — unlike a critical-hit detonation (which hits the bin's own
  * location), heat cook-off always routes into [HitLocation.CENTER_TORSO].

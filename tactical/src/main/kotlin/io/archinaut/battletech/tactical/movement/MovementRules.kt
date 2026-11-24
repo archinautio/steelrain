@@ -19,7 +19,7 @@ public object MovementRules {
 
     /**
      * Modes [unit] may attempt this phase, in WALK/RUN/JUMP order
-     * (`docs/rules/movement.md` §2–3). A mode is offered iff the unit has a positive MP
+     * (`docs/site/rules/movement.md` §2–3). A mode is offered iff the unit has a positive MP
      * allowance for it; prone-ness and leg damage are legality concerns for a specific
      * attempt (see [moveRejection]), not availability.
      */
@@ -34,7 +34,7 @@ public object MovementRules {
 
     /**
      * Rule-level rejection for [unit] attempting to move in [mode], independent of
-     * destination (`docs/rules/movement.md` §2, `docs/rules/armor-damage.md` §8).
+     * destination (`docs/site/rules/movement.md` §2, `docs/site/rules/armor-damage.md` §8).
      * Returns null if the attempt is rule-legal.
      */
     public fun moveRejection(unit: CombatUnit, mode: MovementMode): CommandRejection? = when {

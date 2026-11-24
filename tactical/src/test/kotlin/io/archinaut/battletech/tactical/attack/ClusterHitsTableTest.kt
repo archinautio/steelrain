@@ -6,7 +6,7 @@ import org.junit.jupiter.api.assertThrows
 
 /**
  * Verifies the [ClusterHitsTable] lookup against the canonical table in
- * `docs/rules/cluster-weapons.md` §1.
+ * `docs/site/rules/cluster-weapons.md` §1.
  */
 internal class ClusterHitsTableTest {
 
@@ -106,7 +106,7 @@ internal class ClusterHitsTableTest {
         assertThrows<IllegalArgumentException> { ClusterHitsTable.missilesHit(6, 13) }
     }
 
-    // ── Newly added sizes (spot-checked against docs/rules/cluster-weapons.md §1) ──
+    // ── Newly added sizes (spot-checked against docs/site/rules/cluster-weapons.md §1) ──
 
     @Test
     fun `size 3 returns correct value for every roll`() {

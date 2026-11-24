@@ -1,8 +1,9 @@
-# BattleTech Rules Reference — Index
+# Rules
 
-Topic-scoped reference docs for the standard BattleMech game. Use this index to jump straight to the
-document (and section) that owns a rule, instead of scanning every file. Each rule has **one canonical
-home**; other docs link to it rather than restating it.
+These pages describe the rules the game applies to a BattleMech match: movement, attacks, damage,
+heat, the pilot, and how a match ends. Use this index to jump straight to the page (and section)
+that covers a rule. Each rule is described on **one page**; other pages link to it rather than
+restating it.
 
 ## Documents at a glance
 
@@ -64,6 +65,5 @@ home**; other docs link to it rather than restating it.
 
 ## Notes
 
-- When a rule appears in more than one doc, the non-owning doc links to the canonical home above —
-  follow the link rather than trusting a restated number, and trust the owning doc over general
-  BattleTech knowledge too.
+- When a rule is mentioned on more than one page, the other pages link to the page that describes
+  it. Where these pages differ from other BattleTech rulebooks, the game follows these pages.

@@ -4,7 +4,7 @@ The TUI's six built-in color themes (`dark`, `light`, `dark-256`, `light-256`, `
 `light-16`) are data, not code: each is a JSON file in the repository's root `theme/` directory,
 loaded at runtime by `io.archinaut.battletech.tui.screen.resolveTheme` — see that function's KDoc and
 `io.archinaut.battletech.tui.screen.ThemeFile` for the exact resolution and validation rules. This doc covers
-the file format and, since JSON can't hold comments, the design rationale behind the values
+loading and, since JSON can't hold comments, the design rationale behind the values
 themselves. `io.archinaut.battletech.tui.screen.BuiltInThemesTest` enforces every contrast/distinctness/ordering
 guarantee described below against the actual packaged files — if this doc and that test ever
 disagree, the test is authoritative.
@@ -16,48 +16,27 @@ for validated file-backed/custom color schemes. Color schemes are stable for a r
 construct a new renderer/screen scope to change one. The TUI continues to select its existing JSON
 themes, whose values and snapshots are intentionally unchanged.
 
-## File format
+## Loading
 
-One file per theme, one color space per file — there is no conversion between tiers (see
-`io.archinaut.tenter.color.TerminalColor`'s KDoc). `colorSpace` selects both the value syntax and the
-`AnsiLevel` tier the theme targets:
+The file format (color spaces, role tables) is documented for players in
+[Color themes](site/themes.md#file-format). What a maintainer must preserve:
 
-| `colorSpace` | Value syntax                         | `TerminalColor` subtype |
-|--------------|--------------------------------------|-------------------------|
-| `truecolor`  | `#RRGGBB`                            | `TrueColor`             |
-| `ansi256`    | decimal string, `16..255`            | `Ansi256`               |
-| `ansi16`     | decimal string, `30..37` or `90..97` | `Ansi16`                |
-
-```json
-{
-  "colorSpace": "truecolor",
-  "background": "#101418",
-  "standard": { "DEFAULT": "#DDE2E5", "...": "..." },
-  "app": { "DRAFT": "#A6ADB4" },
-  "heatScale": { "CURRENT_BG": "#3A3218", "...": "..." },
-  "board":  { "PLAYER_1": "#A0F4FF", "...": "..." }
-}
-```
-
-`standard` must hold exactly the 12 `io.archinaut.tenter.color.StandardRole` names; `app` must hold exactly the
-`io.archinaut.battletech.tui.screen.AppRole` names (today only `DRAFT`); `board` must hold exactly the
-27 `io.archinaut.battletech.tui.screen.BoardRole` names; and `heatScale` must hold exactly the three
-`io.archinaut.battletech.tui.screen.HeatScaleRole` names. A missing or unrecognized role name fails to load with
-a `ThemeLoadException` naming the offending role and table — this is the load-time replacement for
-the compile-time exhaustiveness check a hand-written `ColorScheme` object used to get for free (see
-`io.archinaut.tenter.color.ColorScheme`'s KDoc). Custom themes written before the `heatScale` table was added
-must add all three roles, and custom themes that list `DRAFT` under `standard` must move it to `app`.
-Custom themes written before the `chrome` and `ui` tables were renamed must rename them to
-`standard` and `app`; there is deliberately no unverified fallback color and no legacy table name.
-
-Resolution is not theme-specific: `io.archinaut.battletech.tui.screen.ThemeLoader` is a thin adapter over
-`io.archinaut.battletech.tactical.io.ResourceOrFileLoader` (see `docs/architecture.md`), the same generic loader
-`io.archinaut.battletech.tactical.model.map.GameMapLoader` uses for maps. A packaged theme is resolved as
-`theme/<name>.json` on the classpath; `theme/index.json` lists the built-in names
-(`{"names": [...]}` — the same schema `map/index.json` uses) so an unrecognized `--theme` name can
-name the built-ins in its error, since a jar can't otherwise list a resource directory. For
-`--theme <name|path>`, an existing filesystem path is authoritative and never falls back to a
-packaged theme; otherwise the value is resolved as a built-in name.
+- One file per theme, one color space per file — there is no conversion between tiers (see
+  `io.archinaut.tenter.color.TerminalColor`'s KDoc).
+- `standard` must hold exactly the 12 `io.archinaut.tenter.color.StandardRole` names, `app` exactly the
+  `io.archinaut.battletech.tui.screen.AppRole` names, `board` exactly the
+  `io.archinaut.battletech.tui.screen.BoardRole` names, and `heatScale` exactly the
+  `io.archinaut.battletech.tui.screen.HeatScaleRole` names. A missing or unrecognized role name fails
+  to load with a `ThemeLoadException` naming the offending role and table — the load-time
+  replacement for the compile-time exhaustiveness check a hand-written `ColorScheme` object gets
+  for free. There is deliberately no unverified fallback color and no legacy table name.
+- Resolution is not theme-specific: `io.archinaut.battletech.tui.screen.ThemeLoader` is a thin adapter over
+  `io.archinaut.battletech.tactical.io.ResourceOrFileLoader` (see `docs/architecture.md`), the same generic
+  loader maps use. A packaged theme is resolved as `theme/<name>.json` on the classpath;
+  `theme/index.json` lists the built-in names so an unrecognized `--theme` name can name the
+  built-ins in its error, since a jar can't otherwise list a resource directory. For
+  `--theme <name|path>`, an existing filesystem path is authoritative and never falls back to a
+  packaged theme.
 
 ## Why the values are what they are
 

@@ -10,7 +10,7 @@ import io.archinaut.battletech.tactical.unit.basePsrModifier
 import io.archinaut.battletech.tactical.unit.pilotingSkillRoll
 
 /**
- * Makes [unit] fall and applies the accompanying pilot hit (`docs/rules/pilot.md` §4).
+ * Makes [unit] fall and applies the accompanying pilot hit (`docs/site/rules/pilot.md` §4).
  *
  * **Canonical dice order** (seeded tests must match this order):
  *  1. Fall location 2d6 (from [fall])
@@ -53,7 +53,7 @@ public fun forcePsrOrFall(unit: CombatUnit, modifier: Int, roller: DiceRoller): 
 }
 
 /**
- * The 20-damage forced PSR (`docs/rules/pilot.md` §3), run after a volley resolves. Each
+ * The 20-damage forced PSR (`docs/site/rules/pilot.md` §3), run after a volley resolves. Each
  * target unit's total damage is the sum of [LocationDamage.armorDamage] +
  * [LocationDamage.structureDamage] across all steps; the unit's current PSR modifiers
  * (gyro, leg) are folded in alongside the damage modifier.

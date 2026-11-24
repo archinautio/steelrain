@@ -1,6 +1,6 @@
 package io.archinaut.battletech.tactical.attack
 
-/** Cluster Hits Table from `docs/rules/cluster-weapons.md` §1. */
+/** Cluster Hits Table from `docs/site/rules/cluster-weapons.md` §1. */
 public object ClusterHitsTable {
 
     /**
@@ -17,7 +17,7 @@ public object ClusterHitsTable {
     }
 
     // Each IntArray has 11 entries for rolls 2..12 (index = roll - 2).
-    // Values transcribed from `docs/rules/cluster-weapons.md` §1.
+    // Values transcribed from `docs/site/rules/cluster-weapons.md` §1.
     private val TABLE: Map<Int, IntArray> = mapOf(
         2  to intArrayOf( 1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2),
         3  to intArrayOf( 1,  1,  1,  2,  2,  2,  2,  2,  3,  3,  3),

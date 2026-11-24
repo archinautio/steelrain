@@ -3,10 +3,10 @@ package io.archinaut.battletech.tactical.unit
 import io.archinaut.battletech.tactical.model.MechLocation
 
 /**
- * Reasons a [CombatUnit] is eliminated from play (`docs/rules/armor-damage.md` §7).
+ * Reasons a [CombatUnit] is eliminated from play (`docs/site/rules/armor-damage.md` §7).
  *
  * Note: a destroyed gyro is deliberately absent — it immobilizes rather than eliminates
- * (`docs/rules/critical-hits.md` §5), so that handling lives in the attack phase handlers
+ * (`docs/site/rules/critical-hits.md` §5), so that handling lives in the attack phase handlers
  * and [io.archinaut.battletech.tactical.movement.MovementPhaseHandler], not here.
  */
 public enum class DestructionReason {
@@ -17,7 +17,7 @@ public enum class DestructionReason {
     PILOT_DEAD,
 }
 
-/** Pilot hit count at which the pilot dies (`docs/rules/pilot.md` §1). */
+/** Pilot hit count at which the pilot dies (`docs/site/rules/pilot.md` §1). */
 public const val PILOT_DEATH_THRESHOLD: Int = 6
 
 /**

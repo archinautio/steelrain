@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
  * A unit that submitted [io.archinaut.battletech.tactical.session.MoveUnit] and spent *at least 1 MP* —
  * including a turn-in-place that only changes facing and enters no new hex — is [Moved] with
  * `hexesMoved = 0`. That distinction matters because the attacker-movement modifier
- * (`docs/rules/to-hit-modifiers.md` §2) applies to any [Moved], turn-in-place included.
+ * (`docs/site/rules/to-hit-modifiers.md` §2) applies to any [Moved], turn-in-place included.
  */
 @Serializable
 public sealed interface MovementThisTurn {

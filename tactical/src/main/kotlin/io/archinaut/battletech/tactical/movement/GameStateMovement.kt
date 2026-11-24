@@ -38,7 +38,7 @@ public fun GameState.applyMove(unitId: UnitId, mode: MovementMode, destination: 
     val moved = moveUnit(unitId, destination)
     // mpSpent == 0 is the unique discriminator for a genuine stay-put: every turn-in-place,
     // walk, or jump step costs >=1 MP, so only a true "declare stationary" hits 0. Per
-    // docs/rules/to-hit-modifiers.md ("Stationary attacker -> +0"), that must be recorded as
+    // docs/site/rules/to-hit-modifiers.md ("Stationary attacker -> +0"), that must be recorded as
     // Stationary, not Moved(mode, 0) (which would wrongly apply the +1/+2/+3 movement modifier).
     val movementThisTurn = if (destination.mpSpent == 0) {
         MovementThisTurn.Stationary

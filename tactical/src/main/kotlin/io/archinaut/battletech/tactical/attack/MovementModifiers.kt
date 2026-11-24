@@ -4,7 +4,7 @@ import io.archinaut.battletech.tactical.model.MovementMode
 import io.archinaut.battletech.tactical.unit.MovementThisTurn
 
 /**
- * Attacker Movement Modifier (`docs/rules/to-hit-modifiers.md` §2).
+ * Attacker Movement Modifier (`docs/site/rules/to-hit-modifiers.md` §2).
  * Used by both weapon fire and physical attacks.
  */
 public fun attackerMovementModifier(movement: MovementThisTurn): Int = when (movement) {
@@ -17,7 +17,7 @@ public fun attackerMovementModifier(movement: MovementThisTurn): Int = when (mov
 }
 
 /**
- * Target Movement Modifier (`docs/rules/to-hit-modifiers.md` §1).
+ * Target Movement Modifier (`docs/site/rules/to-hit-modifiers.md` §1).
  * Used by both weapon fire and physical attacks.
  */
 public fun targetMovementModifier(movement: MovementThisTurn): Int {

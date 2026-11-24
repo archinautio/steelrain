@@ -6,7 +6,7 @@ import io.archinaut.battletech.tactical.model.unitWaterDepth
 
 /**
  * Extra heat dissipation granted when a unit is standing in water
- * (`docs/rules/heat.md` §1 owns the water heat-sink bonus; the specific +6/+12 values
+ * (`docs/site/rules/heat.md` §1 owns the water heat-sink bonus; the specific +6/+12 values
  * below are an ASSUMPTION — the doc states the bonus qualitatively, not numerically).
  *
  * Since per-location heat-sink placement is not tracked granularly in the current model,

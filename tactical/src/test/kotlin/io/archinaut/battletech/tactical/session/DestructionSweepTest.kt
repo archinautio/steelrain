@@ -85,7 +85,7 @@ internal class DestructionSweepTest {
      * 2d6 pair (to-hit, location) appended after the two initiative rolls
      * (4 dice) consumed by [BattleSession.advance]. The hit always drops the
      * target's thin CT IS to 0 (>=1 structure damage), which now fires a crit
-     * check (`docs/rules/critical-hits.md` §1) — a trailing (1,1) roll (2d6=2,
+     * check (`docs/site/rules/critical-hits.md` §1) — a trailing (1,1) roll (2d6=2,
      * the table's "no crit" band) is appended so it consumes no further dice.
      */
     private fun driveToAttack(
@@ -192,7 +192,7 @@ internal class DestructionSweepTest {
     fun `a unit reaching 3 engine crits is flagged destroyed with ENGINE_DESTROYED via the sweep`() {
         // Construct criticalHits directly (this test is about consequences, not crit
         // dice) rather than scripting dice to land 3 crit picks on engine slots.
-        // CENTER_TORSO Engine slots (`docs/rules/critical-hits.md` §3).
+        // CENTER_TORSO Engine slots (`docs/site/rules/critical-hits.md` §3).
         val engineDestroyed = aUnit(
             id = "a",
             owner = PlayerId.PLAYER_1,

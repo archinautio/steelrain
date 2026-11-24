@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
- * Water and depth effects (`docs/rules/water.md`), across every consumer of them:
+ * Water and depth effects (`docs/site/rules/water.md`), across every consumer of them:
  * partial cover via [lineOfSight], the weapon restriction via [SubmergedWeaponRule],
  * the heat-sink bonus via [io.archinaut.battletech.tactical.heat.GameStateHeatTransform], drowning
  * via [HeatPhaseHandler], and the shared [unitWaterDepth] query.

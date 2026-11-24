@@ -31,8 +31,8 @@ public class ReachabilityCalculator(
 ) {
 
     public fun calculate(actor: CombatUnit, mode: MovementMode): ReachabilityMap {
-        // Leg destruction (`docs/rules/armor-damage.md` §8) and heat
-        // (`docs/rules/heat.md` §2) both cut MP. ASSUMPTION on ordering: neither doc says
+        // Leg destruction (`docs/site/rules/armor-damage.md` §8) and heat
+        // (`docs/site/rules/heat.md` §2) both cut MP. ASSUMPTION on ordering: neither doc says
         // which applies first, so the leg halving is taken on base walking MP before the
         // heat penalty is subtracted. Jump jets are unaffected by heat.
         val hasDestroyedLeg = actor.destroyedLegCount() > 0

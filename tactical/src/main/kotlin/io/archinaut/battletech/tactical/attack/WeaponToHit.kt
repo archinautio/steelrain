@@ -46,7 +46,7 @@ private fun rangeLabelFor(band: RangeBand): String = when (band) {
  * [RangeBand] derivation) don't need to special-case its absence. Use [nonZero] to
  * filter for display.
  *
- * The **terrain** entry collapses every `docs/rules/line-of-sight.md` contribution into a
+ * The **terrain** entry collapses every `docs/site/rules/line-of-sight.md` contribution into a
  * single term. When LOS is blocked entirely,
  * [lineOfSight] returns [LineOfSightResult.blocked] = true, which is enforced by
  * [io.archinaut.battletech.tactical.attack.weapon.LineOfSightRule] before this function is reached.

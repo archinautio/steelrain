@@ -200,7 +200,7 @@ internal class AttackResolutionTest {
 
     @Test
     fun `1 sensor crit raises the target number by two`() {
-        // HEAD Sensors slots (`docs/rules/critical-hits.md` §3).
+        // HEAD Sensors slots (`docs/site/rules/critical-hits.md` §3).
         val blindedAttacker = attacker.copy(
             criticalHits = mapOf(io.archinaut.battletech.tactical.model.MechLocation.HEAD to setOf(1)),
         )

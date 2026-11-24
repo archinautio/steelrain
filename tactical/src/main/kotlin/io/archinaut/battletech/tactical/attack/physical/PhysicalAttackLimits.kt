@@ -6,7 +6,7 @@ import io.archinaut.battletech.tactical.unit.CombatUnit
 import io.archinaut.battletech.tactical.unit.UnitId
 
 /**
- * Validates the per-turn physical-attack limits (`docs/rules/physical-attacks.md` §1) for
+ * Validates the per-turn physical-attack limits (`docs/site/rules/physical-attacks.md` §1) for
  * a committed impulse, returning the first [RuleRejection] found or `null` if the
  * declarations are legal.
  */

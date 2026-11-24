@@ -16,7 +16,7 @@ import io.archinaut.battletech.tactical.unit.CombatUnit
 
 /**
  * Ordered breakdown of every contribution to a physical attack's to-hit target number
- * (`docs/rules/physical-attacks.md` §4), excluding the attacker's piloting skill — the
+ * (`docs/site/rules/physical-attacks.md` §4), excluding the attacker's piloting skill — the
  * base, added separately like gunnery is for weapons.
  *
  * The terrain term uses the same [lineOfSight] routine as weapon attacks, so intervening

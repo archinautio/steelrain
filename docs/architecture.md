@@ -9,7 +9,8 @@ Two tiers, distinguished by **how they load** — not by topic:
 | Tier | Loads | Holds |
 |---|---|---|
 | Root `CLAUDE.md` | Always in context | Every rule and prohibition, stated completely but tersely — never its rationale |
-| `docs/` (this file, `build.md`, `wire-protocol.md`, `rules/`, `agents/`, `tui-testing.md`, `color-themes.md`) | On demand, when something chooses to read it | Explanation, enumeration, history — what you look up once you know you have a question |
+| `docs/` (this file, `build.md`, `wire-protocol.md`, `agents/`, `tui-testing.md`, `color-themes.md`) | On demand, when something chooses to read it | Explanation, enumeration, history — what you look up once you know you have a question |
+| `docs/site/` (the public player site, including `rules/`) | On demand; also published to GitHub Pages | Only what a player needs to install, set up and play, and the game rules — never internals. See `docs/documentation.md` |
 
 **The ownership test**: does the content *prevent* a decision or *explain* one? Prevent → root `CLAUDE.md`. Explain → `docs/`. A referenced doc is only reached by someone who already suspects it applies, so every trigger has to be in root: the rules warning, the boundary rule, the `DiceRoller` rule. Each compresses to a line, which is why they are stated outright rather than pointed at.
 
@@ -21,7 +22,7 @@ Two tiers, distinguished by **how they load** — not by topic:
 
 **`docs/agents/` filenames are fixed.** `issue-tracker.md` and `triage-labels.md` look like an obvious merge — 32 lines between them, and the first links to the second for its `Status:` role strings — but both are referenced by path from outside this repo, where a rename cannot follow. Do not merge, rename, or move them, despite their size and their overlap.
 
-**Granularity inside `docs/rules/` is deliberate.** The rules docs cross-link densely, but almost every link points at one of three hubs (`armor-damage.md`, `pilot.md`, `critical-hits.md`) — a conditional jump ("if damage penetrates, go here"), not evidence the files are one document. `index.md` is what makes a small file cheap to route to, so a 34-line `water.md` costs nothing. The one real triangle (`armor-damage ↔ critical-hits ↔ pilot`) is 24KB combined; merging it would make every single lookup pay for the rare full damage chain.
+**Granularity inside `docs/site/rules/` is deliberate.** The rules docs cross-link densely, but almost every link points at one of three hubs (`armor-damage.md`, `pilot.md`, `critical-hits.md`) — a conditional jump ("if damage penetrates, go here"), not evidence the files are one document. `index.md` is what makes a small file cheap to route to, so a 34-line `water.md` costs nothing. The one real triangle (`armor-damage ↔ critical-hits ↔ pilot`) is 24KB combined; merging it would make every single lookup pay for the rare full damage chain.
 
 ## Package layout per module
 

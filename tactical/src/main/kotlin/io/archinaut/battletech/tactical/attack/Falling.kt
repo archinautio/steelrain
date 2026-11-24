@@ -18,7 +18,7 @@ public data class FallResult(
 )
 
 /**
- * Makes [unit] fall (`docs/rules/pilot.md` §4). Reusable by any fall trigger — kick
+ * Makes [unit] fall (`docs/site/rules/pilot.md` §4). Reusable by any fall trigger — kick
  * knockdown, leg destruction, a failed forced PSR.
  */
 public fun fall(unit: CombatUnit, roller: DiceRoller): Pair<CombatUnit, FallResult> {

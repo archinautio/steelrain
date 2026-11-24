@@ -165,7 +165,7 @@ public class MovementPhaseHandler : PhaseHandler {
         roller: DiceRoller,
     ): PhaseOutcome {
         val initiative = turn.initiative
-        // Only active units take an impulse slot (`docs/rules/movement.md` §2).
+        // Only active units take an impulse slot (`docs/site/rules/movement.md` §2).
         val order = calculateMovementOrder(
             loser = initiative.loser, loserUnitCount = state.units.activeOf(initiative.loser).size,
             winner = initiative.winner, winnerUnitCount = state.units.activeOf(initiative.winner).size,

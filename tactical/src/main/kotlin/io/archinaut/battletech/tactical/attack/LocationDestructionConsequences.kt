@@ -13,7 +13,7 @@ import io.archinaut.battletech.tactical.unit.disableWeaponsIn
  * comparing [before] (pre-volley snapshot) against [after] (post-volley state) for every
  * unit, in unit-id order (for deterministic dice consumption).
  *
- * The consequences themselves are owned by `docs/rules/armor-damage.md` §8. Two decisions
+ * The consequences themselves are owned by `docs/site/rules/armor-damage.md` §8. Two decisions
  * this code makes on top of them:
  *
  * A leg destruction schedules **no** fall when both legs are now destroyed (the unit is
