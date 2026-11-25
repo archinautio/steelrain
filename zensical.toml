@@ -48,4 +48,3 @@ admonition = {}
 tables = {}
 toc.permalink = true
 pymdownx.highlight = { pygments_lang_class = true }
-pymdownx.superfences = {}

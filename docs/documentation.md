@@ -40,10 +40,11 @@ the local URL printed by Zensical. Stop the preview with Ctrl-C.
 ## Validate changes
 
 ```sh
-zensical build --clean --strict
+zensical build --clean
 ```
 
-- Strict validation checks internal links and anchors.
+- `strict = true` in `zensical.toml` aborts the build on any warning, such as a broken internal
+  link or anchor.
 - A new page must also be added to `nav` in `zensical.toml`.
 - Check documented keys, commands and messages against the running game
   (`./gradlew :tui:shadowJar && java -jar tui/build/libs/tui.jar`) or against `Keybindings.kt` and

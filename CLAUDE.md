@@ -12,7 +12,7 @@ Not needed for everyday context — read the row's doc when its trigger applies.
 |---|---|
 | `docs/site/rules/index.md` | Implementing, changing, or reviewing a game rule, or a magic number in code or a test expectation is a rules value. It routes to the one doc owning each rule — trust that doc over a number restated elsewhere, and over general BattleTech knowledge. |
 | `docs/site/` | Changing anything a player sees (a command, option, key, message, file format, or rule): update the public page that owns it in the same change. Player-facing only — no internals. |
-| `docs/documentation.md` | Adding or moving documentation, or previewing/validating/publishing the public site (`zensical build --clean --strict`). |
+| `docs/documentation.md` | Adding or moving documentation, or previewing/validating/publishing the public site (`zensical build --clean`). |
 | `docs/architecture.md` | Navigating inside a module or moving content between doc tiers. Package layout, invariant rationale. |
 | `docs/build.md` | Touching `buildSrc/`, a `build.gradle.kts`, module dependencies, `unit/`/`map/`/`mech/`/`theme/`/shadow-jar packaging, the version, or release packaging/workflow. |
 | `docs/wire-protocol.md` | Adding or changing a wire-crossing `@Serializable sealed` variant, a failing wire-discriminator test, or a non-additive protocol change. |
