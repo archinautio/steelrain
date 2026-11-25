@@ -22,7 +22,7 @@ packaging, in `io.archinaut.steelrain.gradle` (see [Release packaging](#release-
 
 ## TUI packaging
 
-`tui/build.gradle.kts` applies `alias(libs.plugins.shadow)` — `com.gradleup.shadow`, version `9.4.2` per `gradle/libs.versions.toml`.
+`tui/build.gradle.kts` applies `alias(libs.plugins.shadow)` — `com.gradleup.shadow`, version `9.6.1` per `gradle/libs.versions.toml`.
 
 Tactical's `processResources` copies the repository's root `map/`, `unit/`, and `mech/` directories into the tactical runtime resources under the same names. Because `tui` depends on `tactical`, Shadow JAR assembly includes the packaged maps, unit collections, and mech collections transitively; none is configured separately on `shadowJar`.
 
